@@ -30,8 +30,8 @@
     </Shell.Resources>
 
     <TabBar>
-        <ShellContent Title="About"     Icon="icon_about.png"   ContentTemplate="{DataTemplate local:StartupPage}"  />
-        <ShellContent Title="Browse"    Icon="icon_feed.png"    ContentTemplate="{DataTemplate local:StartupPage}" />
-        <ShellContent Title="Login"     Icon="profile.png"      ContentTemplate="{DataTemplate local:LoginPage}"    BindingContext="{Binding LoginViewModel}"/>
+        <ShellContent Title="StartupPage"   Icon="icon_about.png"   ContentTemplate="{DataTemplate local:StartupPage}"  BindingContext="{Binding AllStartupsViewModel}"/>
+        <ShellContent Title="Browse"        Icon="icon_feed.png"    ContentTemplate="{DataTemplate local:StartupPage}" /> 
+        <ShellContent Title="Login"         Icon="profile.png"      ContentTemplate="{DataTemplate local:LoginPage}"    BindingContext="{Binding LoginViewModel}"/>
     </TabBar>
 </Shell>

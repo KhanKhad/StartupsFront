@@ -9,12 +9,13 @@ namespace StartupsFront.ViewModels
     {
         public INavigation Navigation { get; set; }
         public LoginViewModel LoginViewModel { get; set; }
-
+        public AllStartupsViewModel AllStartupsViewModel { get; set; }
 
         public ShellPageViewModel(INavigation navigation)
         {
             Navigation = navigation;
             LoginViewModel = new LoginViewModel() { Navigation = Navigation };
+            AllStartupsViewModel = new AllStartupsViewModel() { Navigation = Navigation };
         }
     }
 }
