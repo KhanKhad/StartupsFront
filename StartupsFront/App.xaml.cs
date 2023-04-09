@@ -1,4 +1,5 @@
 ﻿using StartupsFront.Services;
+using StartupsFront.ViewModels;
 using StartupsFront.Views;
 using System;
 using Xamarin.Forms;
@@ -13,7 +14,8 @@ namespace StartupsFront
         {
             InitializeComponent();
             DependencyService.Register<DataStore>();
-            MainPage = new AppShell();
+            var mainPage = new AppShell();
+            MainPage = mainPage;
         }
 
         protected override void OnStart()

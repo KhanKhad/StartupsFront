@@ -15,7 +15,6 @@ namespace StartupsFront.Views
         public LoginPage()
         {
             InitializeComponent();
-            this.BindingContext = new LoginViewModel();
         }
     }
 }

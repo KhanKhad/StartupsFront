@@ -21,6 +21,7 @@ namespace StartupsFront.ViewModels
             var t = DataStore;
             // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
             t.MainModel.User.Token = Guid.NewGuid().ToString();
+            Navigation.PushAsync(new AboutPage());
         }
     }
 }

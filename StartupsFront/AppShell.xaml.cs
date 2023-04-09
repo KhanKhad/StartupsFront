@@ -11,9 +11,8 @@ namespace StartupsFront
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
-            Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
+            var dataContext = new ShellPageViewModel(Navigation);
+            BindingContext = dataContext;
         }
-
     }
 }
