@@ -1,5 +1,4 @@
-﻿using StartupsFront.Models;
-using StartupsFront.Services;
+﻿using StartupsFront.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +9,7 @@ namespace StartupsFront.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        public DataStore DataStore => DependencyService.Get<DataStore>();
 
         bool isBusy = false;
         public bool IsBusy

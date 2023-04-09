@@ -12,8 +12,7 @@ namespace StartupsFront
         public App()
         {
             InitializeComponent();
-
-            DependencyService.Register<MockDataStore>();
+            DependencyService.Register<DataStore>();
             MainPage = new AppShell();
         }
 

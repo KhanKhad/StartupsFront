@@ -56,8 +56,6 @@ namespace StartupsFront.ViewModels
                 Description = Description
             };
 
-            await DataStore.AddItemAsync(newItem);
-
             // This will pop the current page off the navigation stack
             await Shell.Current.GoToAsync("..");
         }
