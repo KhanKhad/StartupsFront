@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="StartupsFront.Views.CreateStartupPage">
+             x:Class="StartupsFront.Views.ProfilePage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="CreateStartupPage"
+            <Label Text="ProfilePage"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Войти" HorizontalOptions="Center" CornerRadius="10" Command="{Binding LoginOrRegisterCommand}"></Button>
+            <Label Text="{Binding Name}"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
         </StackLayout>

@@ -1,5 +1,4 @@
-﻿using StartupsFront.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace StartupsFront.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AllStartupsPage : ContentPage
+    public partial class ProfilePage : ContentPage
     {
-        public AllStartupsPage()
+        public ProfilePage()
         {
             InitializeComponent();
         }

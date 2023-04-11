@@ -7,8 +7,22 @@
              x:Class="StartupsFront.Views.LoginPage"
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
-        <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
-            <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}"/>
+        <StackLayout Padding="5, 100, 5, 5">
+            <Label Text="Вход" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center"></Label>
+            <StackLayout Padding="5, 10, 5, 5">
+                <Label Text="Логин" FontSize="25" FontAttributes="Bold"></Label>
+                <Entry Placeholder="Ваш логин" Text="{Binding Login}"></Entry>
+                <Label Text="Пароль" FontSize="25" FontAttributes="Bold"></Label>
+                <Entry Placeholder="Ваш пароль" Text="{Binding Password}" IsPassword="True"></Entry>
+            </StackLayout>
+            <StackLayout Padding="5, 15, 5, 5">
+                <Button Text="Войти" HorizontalOptions="Center" CornerRadius="10" Command="{Binding LoginCommand}"></Button>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Padding="5, 10, 5, 5" HorizontalOptions="Center">
+                <Button Text="Забыли пароль?"  TextColor="Red" BackgroundColor="White" Command="{Binding ForgorPassPageCmd}"></Button>
+                <Button Text="Регистрация" TextColor="Blue" BackgroundColor="White"  Command="{Binding RegisterPageCmd}"></Button>
+            </StackLayout>
+            <Label HorizontalOptions="Center" Margin="10" Text="Логин или пароль не верен!" TextColor="Red" FontSize="25" IsVisible="{Binding Alert}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -4,9 +4,32 @@
              x:Class="StartupsFront.Views.AllStartupsPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
+            <Label Text="AllStartupsPage"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
+            <ListView ItemsSource="{Binding Startups}" >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30*" />
+                                    <ColumnDefinition Width="30*" />
+                                    <ColumnDefinition Width="30*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label  Grid.Column="0" Text="{Binding Item2}"/>
+                                <Label  Grid.Column="1" Text="{Binding Description}"/>
+                                <Label Grid.Column="2" Text="{Binding Name}"/>
+                            </Grid>
+                            
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

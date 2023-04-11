@@ -9,7 +9,7 @@ namespace StartupsFront.Models
         public UserModel User { get; set; }
         public AppMainModel() 
         {
-            User = new UserModel();
+
         }
 
     }

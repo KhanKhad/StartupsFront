@@ -1,8 +1,4 @@
 ﻿using StartupsFront.ViewModels;
-using StartupsFront.Views;
-using System;
-using System.Collections.Generic;
-using Xamarin.Forms;
 
 namespace StartupsFront
 {

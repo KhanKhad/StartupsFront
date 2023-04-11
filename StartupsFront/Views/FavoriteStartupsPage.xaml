@@ -4,7 +4,7 @@
              x:Class="StartupsFront.Views.FavoriteStartupsPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
+            <Label Text="FavoriteStartupsPage"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
         </StackLayout>
