@@ -1,6 +1,8 @@
 ﻿
+using StartupsFront.DependencyServiceAll;
 using StartupsFront.Models;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -71,7 +73,15 @@ namespace StartupsFront.ViewModels
             user.Name = "Ahalay";
             dataStore.MainModel.User = user;
 
+
+            Stream stream = await DependencyService.Get<IPhotoPickerService>().GetImageStreamAsync();
             return await Task.FromResult(true);
+
+            /*if (stream != null)
+            {
+                image.Source = ImageSource.FromStream(() => stream);
+            }
+
             
             /*var client = new HttpClient();
 

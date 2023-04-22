@@ -63,6 +63,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DependencyService\PhotoPickerService.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
@@ -142,4 +143,5 @@
       <Name>StartupsFront</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
 </Project>
