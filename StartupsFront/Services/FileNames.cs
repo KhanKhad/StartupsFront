@@ -7,8 +7,9 @@ namespace StartupsFront.Services
 {
     public class FileNames
     {
-        private const string ProfilePictureFileName = "profilePic.jpg";
 
-        public static string ProfilePictureFilePath => Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, ProfilePictureFileName);
+        public const string ProfilePictureFileName = "profilePic";
+
+        public static string ProfilePictureFileDirectory => Xamarin.Essentials.FileSystem.AppDataDirectory;
     }
 }

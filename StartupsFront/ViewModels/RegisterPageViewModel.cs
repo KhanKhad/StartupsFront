@@ -75,8 +75,15 @@ namespace StartupsFront.ViewModels
         public RegisterPageViewModel()
         {
             // Get the path to a file on internal storage
-            _imageSource = FileNames.ProfilePictureFilePath;
-
+            foreach (var file in new DirectoryInfo(FileNames.ProfilePictureFileDirectory).GetFiles())
+            {
+                if (file.Name.StartsWith(FileNames.ProfilePictureFileName))
+                {
+                    _imageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, FileNames.ProfilePictureFileName + file.Extension);
+                    break;
+                }
+            }
+            
             SignUpCommand = new Command(async () => await SignUpCmd());
             PickImageCommand = new Command(async () => await PickImage());
         }
@@ -110,17 +117,18 @@ namespace StartupsFront.ViewModels
                     };
 
                     if(file_bytes.Length != 0)
-                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, JsonConstants.UserPictureFileName);
+                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, JsonConstants.UserPictureFileName + Path.GetExtension(_imageSource));
 
                     var response = await client.PostAsync(uri, form);
 
                     var responseString = await response.Content.ReadAsStringAsync();
 
-                    var answerDefinition = new { Result = "", Token = "" };
-
-                    var answer = JsonConvert.DeserializeAnonymousType(responseString, answerDefinition);
                     try
                     {
+                        var answerDefinition = new { Result = "", Token = "" };
+
+                        var answer = JsonConvert.DeserializeAnonymousType(responseString, answerDefinition);
+
                         if (answer.Result.Equals("Success", StringComparison.OrdinalIgnoreCase))
                         {
                             var user = new UserModel()
@@ -178,6 +186,7 @@ namespace StartupsFront.ViewModels
             // canceled
             if (photo == null)
                 return;
+            ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, FileNames.ProfilePictureFileName + Path.GetExtension(photo.FileName));
 
             // save the file into local storage
             using (var stream = await photo.OpenReadAsync())

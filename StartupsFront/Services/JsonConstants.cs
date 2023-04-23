@@ -11,7 +11,7 @@ namespace StartupsFront.Services
         public const string UserMail = "email";
         public const string UserToken = "token";
         public const string UserPicturePropertyName = "profile_pic";
-        public const string UserPictureFileName = "pic.png";
+        public const string UserPictureFileName = "picture";
 
 
     }
