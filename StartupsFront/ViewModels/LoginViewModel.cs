@@ -1,9 +1,8 @@
-﻿
-using StartupsFront.DependencyServiceAll;
+﻿using StartupsFront.DependencyServiceAll;
 using StartupsFront.Models;
+using StartupsFront.Views;
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -50,6 +49,7 @@ namespace StartupsFront.ViewModels
         public LoginViewModel()
         {
             LoginCommand = new Command(async(o) => await Login_Cmd(o));
+            RegisterPageCmd = new Command(async (o) => await Register_Cmd(o));
         }
 
         private async Task Login_Cmd(object obj)
@@ -104,9 +104,14 @@ namespace StartupsFront.ViewModels
             Navigation.PushAsync(page);*/
         }
 
-        private void Register_Cmd()
+        private async Task Register_Cmd(object obj)
         {
-
+            var vm = new RegisterPageViewModel();
+            var page = new RegisterPage()
+            {
+                BindingContext = vm,
+            };
+            await Navigation.PushAsync(page);
         }
     }
 }
