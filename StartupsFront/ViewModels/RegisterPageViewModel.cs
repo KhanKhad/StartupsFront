@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using StartupsFront.DependencyServiceAll;
 using StartupsFront.Models;
 using StartupsFront.Services;
 using System;
@@ -108,8 +107,10 @@ namespace StartupsFront.ViewModels
                         { new StringContent(_username + "@mail.ru"), JsonConstants.UserMail },
                         { new StringContent(_password), JsonConstants.UserPassword },
 
-                        { new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, JsonConstants.UserPictureFileName }
                     };
+
+                    if(file_bytes.Length != 0)
+                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, JsonConstants.UserPictureFileName);
 
                     var response = await client.PostAsync(uri, form);
 
@@ -147,34 +148,22 @@ namespace StartupsFront.ViewModels
         private async Task PickImage()
         {
             await TakePhotoAsync();
-            Stream stream = await DependencyService.Get<IPhotoPickerService>().GetImageStreamAsync();
-            var bytes = await ReadFully(stream);
-            await Task.Run(()=> File.WriteAllBytes(_imageSource, bytes));
             OnPropertyChanged(nameof(ImageSource));
         }
 
-        public static async Task<byte[]> ReadFully(Stream input)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                await input.CopyToAsync(ms);
-                return ms.ToArray();
-            }
-        }
-
-        async Task TakePhotoAsync()
+        private async Task TakePhotoAsync()
         {
             try
             {
-                var photo = await MediaPicker.CapturePhotoAsync();
+                var photo = await MediaPicker.PickPhotoAsync();
                 await LoadPhotoAsync(photo);
                 Console.WriteLine($"CapturePhotoAsync COMPLETED: {ImageSource}");
             }
-            catch (FeatureNotSupportedException fnsEx)
+            catch (FeatureNotSupportedException)
             {
                 // Feature is not supported on the device
             }
-            catch (PermissionException pEx)
+            catch (PermissionException)
             {
                 // Permissions not granted
             }
@@ -184,7 +173,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        async Task LoadPhotoAsync(FileResult photo)
+        private async Task LoadPhotoAsync(FileResult photo)
         {
             // canceled
             if (photo == null)

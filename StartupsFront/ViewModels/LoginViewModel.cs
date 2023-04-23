@@ -1,5 +1,4 @@
-﻿using StartupsFront.DependencyServiceAll;
-using StartupsFront.Models;
+﻿using StartupsFront.Models;
 using StartupsFront.Services;
 using StartupsFront.Views;
 using System;
