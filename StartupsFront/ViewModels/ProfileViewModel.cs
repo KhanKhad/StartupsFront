@@ -1,6 +1,8 @@
-﻿using StartupsFront.Views;
+﻿using StartupsFront.Services;
+using StartupsFront.Views;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -10,6 +12,7 @@ namespace StartupsFront.ViewModels
     public class ProfileViewModel : BaseViewModel
     {
         private string _name;
+        private string _imageSource;
 
         public INavigation Navigation { get; set; }
 
@@ -23,10 +26,25 @@ namespace StartupsFront.ViewModels
             }
         }
 
+        public string ImageSource
+        {
+            get => _imageSource;
+            set
+            {
+                _imageSource = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Command LoginOrRegisterCommand { get; }
 
         public ProfileViewModel()
         {
+            var datastore = DataStore;
+            if (datastore.MainModel.User !=  null)
+            {
+                _imageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, datastore.MainModel.User.ProfilePictFileName);
+            }
             LoginOrRegisterCommand = new Command(async (o) => await LoginOrRegister_Cmd(o));
         }
 
@@ -55,6 +73,7 @@ namespace StartupsFront.ViewModels
             if (dataStore.MainModel.User == null)
                 return;
 
+            ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, dataStore.MainModel.User.ProfilePictFileName);
             Name = dataStore.MainModel.User.Name;
         }
     }

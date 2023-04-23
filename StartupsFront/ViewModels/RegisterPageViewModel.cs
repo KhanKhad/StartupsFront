@@ -106,8 +106,6 @@ namespace StartupsFront.ViewModels
                 {
                     var uri = Requests.CreateUserMultipartUri;
 
-                    var file_bytes = File.ReadAllBytes(_imageSource);
-
                     MultipartFormDataContent form = new MultipartFormDataContent
                     {
                         { new StringContent(_username), JsonConstants.UserName },
@@ -116,8 +114,10 @@ namespace StartupsFront.ViewModels
 
                     };
 
-                    if(file_bytes.Length != 0)
-                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, JsonConstants.UserPictureFileName + Path.GetExtension(_imageSource));
+                    var file_bytes = File.ReadAllBytes(_imageSource);
+
+                    if (file_bytes.Length != 0)
+                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, _imageSource);
 
                     var response = await client.PostAsync(uri, form);
 
@@ -187,11 +187,11 @@ namespace StartupsFront.ViewModels
             if (photo == null)
                 return;
             ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, FileNames.ProfilePictureFileName + Path.GetExtension(photo.FileName));
-
-            // save the file into local storage
-            using (var stream = await photo.OpenReadAsync())
-            using (var newStream = File.OpenWrite(_imageSource))
-                await stream.CopyToAsync(newStream);
+            
+            await Task.Run(() =>{
+                var bytes = File.ReadAllBytes(photo.FullPath);
+                File.WriteAllBytes(ImageSource, bytes);
+            });
         }
     }
 }

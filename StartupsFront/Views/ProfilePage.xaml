@@ -7,6 +7,7 @@
             <Label Text="ProfilePage"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
+            <Image Source="{Binding ImageSource}" Margin="10" HeightRequest="100"  />
             <Button Text="Войти" HorizontalOptions="Center" CornerRadius="10" Command="{Binding LoginOrRegisterCommand}"></Button>
             <Label Text="{Binding Name}"
                 VerticalOptions="CenterAndExpand" 

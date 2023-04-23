@@ -71,8 +71,6 @@ namespace StartupsFront.ViewModels
         {
             var dataStore = DataStore;
             var user = new UserModel();
-            user.Name = "Ahalay";
-            dataStore.MainModel.User = user;
             
             var client = new HttpClient();
 
@@ -81,11 +79,27 @@ namespace StartupsFront.ViewModels
             try
             {
                 var userMultiform = await response.Content.ReadAsMultipartAsync();
+
                 foreach (var content in userMultiform.Contents)
                 {
-                    var s = await content.ReadAsStringAsync();
-                    var jsonString = await content.ReadAsByteArrayAsync();
+                    switch (content.Headers.ContentDisposition.Name.ToLower())
+                    {
+                        case JsonConstants.UserName:
+                            user.Name = await content.ReadAsStringAsync();
+                            break;
+                        case JsonConstants.UserToken:
+                            user.Token = await content.ReadAsStringAsync();
+                            break;
+                        case JsonConstants.UserPicturePropertyName:
+                            var fileName = FileNames.ProfilePictureFileName + Path.GetExtension(content.Headers.ContentDisposition.FileName);
+                            var path = Path.Combine(FileNames.ProfilePictureFileDirectory, fileName);
+                            var bytes = await content.ReadAsByteArrayAsync();
+                            File.WriteAllBytes(path, bytes);
+                            user.ProfilePictFileName = fileName;
+                            break;
+                    }
                 }
+                dataStore.MainModel.User = user;
             }
             catch
             {
