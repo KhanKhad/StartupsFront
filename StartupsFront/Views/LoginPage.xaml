@@ -22,7 +22,7 @@
                 <Button Text="Забыли пароль?"  TextColor="Red" BackgroundColor="White" Command="{Binding ForgorPassPageCmd}"></Button>
                 <Button Text="Регистрация" TextColor="Blue" BackgroundColor="White"  Command="{Binding RegisterPageCmd}"></Button>
             </StackLayout>
-            <Label HorizontalOptions="Center" Margin="10" Text="Логин или пароль не верен!" TextColor="Red" FontSize="25" IsVisible="{Binding Alert}"/>
+            <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

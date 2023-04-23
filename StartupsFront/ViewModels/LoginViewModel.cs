@@ -1,8 +1,10 @@
 ﻿using StartupsFront.DependencyServiceAll;
 using StartupsFront.Models;
+using StartupsFront.Services;
 using StartupsFront.Views;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -12,7 +14,8 @@ namespace StartupsFront.ViewModels
     {
         private string _username;
         private string _password;
-        private bool _passAlert;
+        private string _errorMessage;
+
         public string Login
         {
             get { return _username; }
@@ -22,15 +25,7 @@ namespace StartupsFront.ViewModels
                 OnPropertyChanged();
             }
         }
-        public bool Alert
-        {
-            get { return _passAlert; }
-            set
-            {
-                _passAlert = value;
-                OnPropertyChanged();
-            }
-        }
+
         public string Password
         {
             get { return _password; }
@@ -41,6 +36,15 @@ namespace StartupsFront.ViewModels
             }
         }
 
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+            }
+        }
         public Command LoginCommand { get; }
         public Command RegisterPageCmd { get; }
         public Command ForgorPassPageCmd { get; }
@@ -56,8 +60,6 @@ namespace StartupsFront.ViewModels
         {
             var loginResult = await CheckLogAndPass();
 
-            Alert = !loginResult;
-
             if (loginResult)
                 await Navigation.PopAsync();
             /*
@@ -72,26 +74,28 @@ namespace StartupsFront.ViewModels
             var user = new UserModel();
             user.Name = "Ahalay";
             dataStore.MainModel.User = user;
-
-
-            Stream stream = await DependencyService.Get<IPhotoPickerService>().GetImageStreamAsync();
-            return await Task.FromResult(true);
-
-            /*if (stream != null)
-            {
-                image.Source = ImageSource.FromStream(() => stream);
-            }
-
             
-            /*var client = new HttpClient();
+            var client = new HttpClient();
 
-            var uri = $"http://127.0.0.1:8080/profile/createuser";
+            var response = await client.GetAsync(Requests.Autenticate(_username, _password));
 
-            var response = await client.GetAsync(uri);
-
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            return !responseString.Contains("unmatch");*/
+            try
+            {
+                var userMultiform = await response.Content.ReadAsMultipartAsync();
+                foreach (var content in userMultiform.Contents)
+                {
+                    var s = await content.ReadAsStringAsync();
+                    var jsonString = await content.ReadAsByteArrayAsync();
+                }
+            }
+            catch
+            {
+                var s = await response.Content.ReadAsStringAsync();
+                ErrorMessage = s;
+                return false;
+            }
+            
+            return true;
         }
 
         private void ForgorPass_Cmd()
@@ -106,7 +110,10 @@ namespace StartupsFront.ViewModels
 
         private async Task Register_Cmd(object obj)
         {
-            var vm = new RegisterPageViewModel();
+            var vm = new RegisterPageViewModel()
+            {
+                Navigation = Navigation,
+            };
             var page = new RegisterPage()
             {
                 BindingContext = vm,

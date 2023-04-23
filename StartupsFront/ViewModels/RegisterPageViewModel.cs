@@ -1,11 +1,15 @@
-﻿using StartupsFront.DependencyServiceAll;
+﻿using Newtonsoft.Json;
+using StartupsFront.DependencyServiceAll;
 using StartupsFront.Models;
+using StartupsFront.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace StartupsFront.ViewModels
@@ -21,7 +25,7 @@ namespace StartupsFront.ViewModels
         private string _password2;
         private string _imageSource;
         private string _errorMessage;
-        public string Login
+        public string UserName
         {
             get { return _username; }
             set
@@ -72,7 +76,7 @@ namespace StartupsFront.ViewModels
         public RegisterPageViewModel()
         {
             // Get the path to a file on internal storage
-            _imageSource = Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "profilePic.jpg");
+            _imageSource = FileNames.ProfilePictureFilePath;
 
             SignUpCommand = new Command(async () => await SignUpCmd());
             PickImageCommand = new Command(async () => await PickImage());
@@ -80,6 +84,8 @@ namespace StartupsFront.ViewModels
 
         private async Task SignUpCmd()
         {
+            ErrorMessage = string.Empty;
+
             var regRes = await SignUp();
             
             if (regRes)
@@ -90,33 +96,57 @@ namespace StartupsFront.ViewModels
         {
             using (var client = new HttpClient())
             {
-                var uri = AppMainModel.Url + "profile/download";
-
-                var file_bytes = File.ReadAllBytes(_imageSource);
-
-                MultipartFormDataContent form = new MultipartFormDataContent
+                try
                 {
-                    { new StringContent(_username), "username" },
-                    { new StringContent("Ahalaymail"), "email" },
-                    { new StringContent(_password), "password" },
+                    var uri = Requests.CreateUserMultipartUri;
 
-                    { new ByteArrayContent(file_bytes, 0, file_bytes.Length), "profile_pic", "profile.png" }
-                };
+                    var file_bytes = File.ReadAllBytes(_imageSource);
 
-                var response = await client.PostAsync(uri, form);
+                    MultipartFormDataContent form = new MultipartFormDataContent
+                    {
+                        { new StringContent(_username), JsonConstants.UserName },
+                        { new StringContent(_username + "@mail.ru"), JsonConstants.UserMail },
+                        { new StringContent(_password), JsonConstants.UserPassword },
 
-                var responseString = await response.Content.ReadAsStringAsync();
+                        { new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, JsonConstants.UserPictureFileName }
+                    };
 
-                var res = responseString.Contains("success");
+                    var response = await client.PostAsync(uri, form);
 
-                if (!res)
-                    ErrorMessage = responseString;
+                    var responseString = await response.Content.ReadAsStringAsync();
 
-                return res;
+                    var answerDefinition = new { Result = "", Token = "" };
+
+                    var answer = JsonConvert.DeserializeAnonymousType(responseString, answerDefinition);
+                    try
+                    {
+                        if (answer.Result.Equals("Success", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var user = new UserModel()
+                            {
+                                Name = _username,
+                                Password = _password,
+                                Token = answer.Token,
+                            };
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        ErrorMessage = responseString;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = ex.Message;
+                }
+
+                return false;
             }
         }
         private async Task PickImage()
         {
+            await TakePhotoAsync();
             Stream stream = await DependencyService.Get<IPhotoPickerService>().GetImageStreamAsync();
             var bytes = await ReadFully(stream);
             await Task.Run(()=> File.WriteAllBytes(_imageSource, bytes));
@@ -130,6 +160,40 @@ namespace StartupsFront.ViewModels
                 await input.CopyToAsync(ms);
                 return ms.ToArray();
             }
+        }
+
+        async Task TakePhotoAsync()
+        {
+            try
+            {
+                var photo = await MediaPicker.CapturePhotoAsync();
+                await LoadPhotoAsync(photo);
+                Console.WriteLine($"CapturePhotoAsync COMPLETED: {ImageSource}");
+            }
+            catch (FeatureNotSupportedException fnsEx)
+            {
+                // Feature is not supported on the device
+            }
+            catch (PermissionException pEx)
+            {
+                // Permissions not granted
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CapturePhotoAsync THREW: {ex.Message}");
+            }
+        }
+
+        async Task LoadPhotoAsync(FileResult photo)
+        {
+            // canceled
+            if (photo == null)
+                return;
+
+            // save the file into local storage
+            using (var stream = await photo.OpenReadAsync())
+            using (var newStream = File.OpenWrite(_imageSource))
+                await stream.CopyToAsync(newStream);
         }
     }
 }

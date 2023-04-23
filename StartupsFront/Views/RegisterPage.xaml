@@ -3,33 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="StartupsFront.Views.RegisterPage">
     <ContentPage.Content>
-        <ScrollView HorizontalScrollBarVisibility="Default">
-            <StackLayout Padding="5, 10, 5, 5">
-                <Label Text="Регистрация" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center"></Label>
+        <Grid>
+            <ScrollView HorizontalScrollBarVisibility="Default">
                 <StackLayout Padding="5, 10, 5, 5">
-                    <Image Source="{Binding ImageSource}" Margin="10" HeightRequest="100"  />
-                    <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
-                        <Button Text="Выбрать изображение" Command="{Binding PickImageCommand}" CornerRadius="10"></Button>
+                    <Label Text="Регистрация" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center"></Label>
+                    <StackLayout Padding="5, 10, 5, 5">
+                        <Image Source="{Binding ImageSource}" Margin="10" HeightRequest="100"  />
+                        <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
+                            <Button Text="Выбрать изображение" Command="{Binding PickImageCommand}" CornerRadius="10"></Button>
+                        </StackLayout>
+                        <Label Text="Имя" FontSize="25" FontAttributes="Bold"></Label>
+                        <Entry Placeholder="Ваше имя"></Entry>
+                        <Label Text="Фамилия" FontSize="25" FontAttributes="Bold"></Label>
+                        <Entry Placeholder="Ваша фамилия"></Entry>
+                        <Label Text="Номер телефона" FontSize="25" FontAttributes="Bold"></Label>
+                        <Entry Placeholder="+7(___)_______"></Entry>
+                        <Label Text="Логин" FontSize="25" FontAttributes="Bold"></Label>
+                        <Entry Placeholder="Телефон или адрес эл.почты" Text="{Binding UserName}"></Entry>
+                        <Label Text="Пароль" FontSize="25" FontAttributes="Bold"></Label>
+                        <Entry Placeholder="Ваш пароль" Text="{Binding Password}" IsPassword="True"></Entry>
+                        <Label Text="Подтвердите пароль" FontSize="25" FontAttributes="Bold"></Label>
+                        <Entry Placeholder="Пароль еще раз" Text="{Binding Password2}" IsPassword="True"></Entry>
                     </StackLayout>
-                    <Label Text="Имя" FontSize="25" FontAttributes="Bold"></Label>
-                    <Entry Placeholder="Ваше имя"></Entry>
-                    <Label Text="Фамилия" FontSize="25" FontAttributes="Bold"></Label>
-                    <Entry Placeholder="Ваша фамилия"></Entry>
-                    <Label Text="Номер телефона" FontSize="25" FontAttributes="Bold"></Label>
-                    <Entry Placeholder="+7(___)_______"></Entry>
-                    <Label Text="Логин" FontSize="25" FontAttributes="Bold"></Label>
-                    <Entry Placeholder="Телефон или адрес эл.почты" Text="{Binding Login}"></Entry>
-                    <Label Text="Пароль" FontSize="25" FontAttributes="Bold"></Label>
-                    <Entry Placeholder="Ваш пароль" Text="{Binding Password}" IsPassword="True"></Entry>
-                    <Label Text="Подтвердите пароль" FontSize="25" FontAttributes="Bold"></Label>
-                    <Entry Placeholder="Пароль еще раз" Text="{Binding Password2}" IsPassword="True"></Entry>
+                    <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
+                        <Button x:Name="Registerbutton" Text="Зарегистрироваться" Command="{Binding SignUpCommand}" CornerRadius="10"></Button>
+                    </StackLayout>
+                    <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
                 </StackLayout>
-                <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
-                    <Button x:Name="Registerbutton" Text="Зарегистрироваться" Command="{Binding SignUpCommand}" CornerRadius="10"></Button>
-                </StackLayout>
-                <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red"  FontAttributes="Bold"></Label>
-            </StackLayout>
-        </ScrollView>
-        
+            </ScrollView>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
