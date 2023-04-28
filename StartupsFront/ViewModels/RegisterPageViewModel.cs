@@ -117,7 +117,7 @@ namespace StartupsFront.ViewModels
                     var file_bytes = File.ReadAllBytes(_imageSource);
 
                     if (file_bytes.Length != 0)
-                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, _imageSource);
+                        form.Add(new ByteArrayContent(file_bytes, 0, file_bytes.Length), JsonConstants.UserPicturePropertyName, Path.GetFileName(_imageSource));
 
                     var response = await client.PostAsync(uri, form);
 

@@ -1,4 +1,5 @@
-﻿using StartupsFront.Services;
+﻿using StartupsFront.Models;
+using StartupsFront.Services;
 using StartupsFront.Views;
 using System;
 using System.Collections.Generic;
@@ -41,11 +42,19 @@ namespace StartupsFront.ViewModels
         public ProfileViewModel()
         {
             var datastore = DataStore;
+            datastore.MainModel.UserChanged += UserChanged;
+
             if (datastore.MainModel.User !=  null)
-            {
-                _imageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, datastore.MainModel.User.ProfilePictFileName);
-            }
+                UserChanged(datastore.MainModel.User);
+
             LoginOrRegisterCommand = new Command(async (o) => await LoginOrRegister_Cmd(o));
+
+        }
+
+        private void UserChanged(UserModel user)
+        {
+            ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, user.ProfilePictFileName);
+            Name = user.Name;
         }
 
         private async Task LoginOrRegister_Cmd(object o)
@@ -57,24 +66,7 @@ namespace StartupsFront.ViewModels
                 BindingContext = vm
             };
 
-            page.Disappearing += Page_Disappearing;
-
             await Navigation.PushAsync(page);
-        }
-
-
-
-        private void Page_Disappearing(object sender, EventArgs e)
-        {
-            var page = (ContentPage)sender;
-            page.Disappearing -= Page_Disappearing;
-
-            var dataStore = DataStore;
-            if (dataStore.MainModel.User == null)
-                return;
-
-            ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, dataStore.MainModel.User.ProfilePictFileName);
-            Name = dataStore.MainModel.User.Name;
         }
     }
 }

@@ -1,35 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:flv="clr-namespace:DLToolkit.Forms.Controls;assembly=DLToolkit.Forms.Controls.FlowListView"
              x:Class="StartupsFront.Views.AllStartupsPage">
     <ContentPage.Content>
         <StackLayout>
             <Label Text="AllStartupsPage"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
-            <ListView ItemsSource="{Binding Startups}" >
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="30*" />
-                                    <ColumnDefinition Width="30*" />
-                                    <ColumnDefinition Width="30*" />
-                                </Grid.ColumnDefinitions>
 
-                                <Label  Grid.Column="0" Text="{Binding Item2}"/>
-                                <Label  Grid.Column="1" Text="{Binding Description}"/>
-                                <Label Grid.Column="2" Text="{Binding Name}"/>
-                            </Grid>
-                            
-                        </ViewCell>
+            <flv:FlowListView FlowColumnCount="2"
+	FlowItemTappedCommand="{Binding StartupTappedCmd}" FlowLastTappedItem="{Binding LastTappedStartup}"
+	FlowItemsSource="{Binding Startups}" >
+                <flv:FlowListView.FlowColumnTemplate>
+                    <DataTemplate>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30*" />
+                                <ColumnDefinition Width="30*" />
+                                <ColumnDefinition Width="30*" />
+                            </Grid.ColumnDefinitions>
+                            <Label  Grid.Column="0" Text="{Binding Item2}"/>
+                            <Label  Grid.Column="1" Text="{Binding Description}"/>
+                            <Label Grid.Column="2" Text="{Binding Name}"/>
+                        </Grid>
+
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </flv:FlowListView.FlowColumnTemplate>
+            </flv:FlowListView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

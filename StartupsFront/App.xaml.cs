@@ -1,9 +1,6 @@
-﻿using StartupsFront.Services;
-using StartupsFront.ViewModels;
-using StartupsFront.Views;
-using System;
+﻿using DLToolkit.Forms.Controls;
+using StartupsFront.Services;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace StartupsFront
 {
@@ -13,6 +10,7 @@ namespace StartupsFront
         public App()
         {
             InitializeComponent();
+            FlowListView.Init();
             DependencyService.Register<DataStore>();
             var mainPage = new AppShell();
             MainPage = mainPage;

@@ -6,8 +6,20 @@ namespace StartupsFront.Models
 {
     public class AppMainModel
     {
-        public UserModel User { get; set; }
-        public AppMainModel() 
+        private UserModel _user;
+
+        public UserModel User
+        {
+            get => _user; 
+            set
+            {
+                _user = value;
+                UserChanged?.Invoke(_user);
+            }
+        }
+
+        public event Action<UserModel> UserChanged;
+        public AppMainModel()
         {
 
         }
