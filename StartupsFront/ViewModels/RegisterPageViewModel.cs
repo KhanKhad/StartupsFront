@@ -75,11 +75,11 @@ namespace StartupsFront.ViewModels
         public RegisterPageViewModel()
         {
             // Get the path to a file on internal storage
-            foreach (var file in new DirectoryInfo(FileNames.ProfilePictureFileDirectory).GetFiles())
+            foreach (var file in new DirectoryInfo(FileNames.ProfilePictureDirectory).GetFiles())
             {
                 if (file.Name.StartsWith(FileNames.ProfilePictureFileName))
                 {
-                    _imageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, FileNames.ProfilePictureFileName + file.Extension);
+                    _imageSource = Path.Combine(FileNames.ProfilePictureDirectory, FileNames.ProfilePictureFileName + file.Extension);
                     break;
                 }
             }
@@ -131,12 +131,6 @@ namespace StartupsFront.ViewModels
 
                         if (answer.Result.Equals("Success", StringComparison.OrdinalIgnoreCase))
                         {
-                            var user = new UserModel()
-                            {
-                                Name = _username,
-                                Password = _password,
-                                Token = answer.Token,
-                            };
                             return true;
                         }
                     }
@@ -186,7 +180,7 @@ namespace StartupsFront.ViewModels
             // canceled
             if (photo == null)
                 return;
-            ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, FileNames.ProfilePictureFileName + Path.GetExtension(photo.FileName));
+            ImageSource = Path.Combine(FileNames.ProfilePictureDirectory, FileNames.ProfilePictureFileName + Path.GetExtension(photo.FileName));
             
             await Task.Run(() =>{
                 var bytes = File.ReadAllBytes(photo.FullPath);

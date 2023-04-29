@@ -6,6 +6,9 @@
         public static string CreateUserMultipartUri => $"{Url}profile/CreateUserFromMultipart";
         public static string AutenticateAndGetUserMultipartUri => $"{Url}profile/AutenticateAndGetMultipart";
 
-        public static string Autenticate(string username, string password) => $"{AutenticateAndGetUserMultipartUri}?name={username}&password={password}"; 
+        public static string Autenticate(string username, string password) => $"{AutenticateAndGetUserMultipartUri}?name={username}&password={password}";
+
+        public static string CreateStartupFromMultiformUri => $"{Url}startupsmanagement/CreateStartupFromMultiform";
+
     }
 }

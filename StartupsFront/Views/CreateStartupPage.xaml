@@ -4,9 +4,20 @@
              x:Class="StartupsFront.Views.CreateStartupPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="CreateStartupPage"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Image Source="{Binding ImageSource}" Margin="10" HeightRequest="100"  />
+            <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
+                <Button Text="Выбрать изображение" Command="{Binding PickImageCommand}" CornerRadius="10"></Button>
+            </StackLayout>
+            <Label Text="Название стартапа" FontSize="25" FontAttributes="Bold"></Label>
+            <Entry Placeholder="Название" Text="{Binding StartupName}"></Entry>
+            <Label Text="Описание" FontSize="25" FontAttributes="Bold"></Label>
+            <Entry Placeholder="Описание стартапа" Text="{Binding StartupDescription}"></Entry>
+            <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
+                <Button Text="Создать стартап" Command="{Binding CreateStartupCommand}" CornerRadius="10"></Button>
+            </StackLayout>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

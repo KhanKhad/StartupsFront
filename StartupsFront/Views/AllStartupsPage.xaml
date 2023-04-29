@@ -9,7 +9,7 @@
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
 
-            <flv:FlowListView FlowColumnCount="2"
+            <flv:FlowListView FlowColumnCount="2" SeparatorVisibility="None" HasUnevenRows="false"
 	FlowItemTappedCommand="{Binding StartupTappedCmd}" FlowLastTappedItem="{Binding LastTappedStartup}"
 	FlowItemsSource="{Binding Startups}" >
                 <flv:FlowListView.FlowColumnTemplate>

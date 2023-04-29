@@ -11,6 +11,7 @@ namespace StartupsFront
         {
             InitializeComponent();
             FlowListView.Init();
+            FileNames.Initialize();
             DependencyService.Register<DataStore>();
             var mainPage = new AppShell();
             MainPage = mainPage;

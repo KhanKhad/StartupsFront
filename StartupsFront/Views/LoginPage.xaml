@@ -22,7 +22,9 @@
                 <Button Text="Забыли пароль?"  TextColor="Red" BackgroundColor="White" Command="{Binding ForgorPassPageCmd}"></Button>
                 <Button Text="Регистрация" TextColor="Blue" BackgroundColor="White"  Command="{Binding RegisterPageCmd}"></Button>
             </StackLayout>
-            <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

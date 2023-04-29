@@ -92,19 +92,19 @@ namespace StartupsFront.ViewModels
                             break;
                         case JsonConstants.UserPicturePropertyName:
                             var fileName = FileNames.ProfilePictureFileName + Path.GetExtension(content.Headers.ContentDisposition.FileName);
-                            var path = Path.Combine(FileNames.ProfilePictureFileDirectory, fileName);
+                            var path = Path.Combine(FileNames.ProfilePictureDirectory, fileName);
                             var bytes = await content.ReadAsByteArrayAsync();
                             File.WriteAllBytes(path, bytes);
                             user.ProfilePictFileName = fileName;
                             break;
                     }
                 }
-                dataStore.MainModel.User = user;
+                dataStore.MainModel.UserOrNull = user;
             }
-            catch
+            catch(Exception ex)
             {
                 var s = await response.Content.ReadAsStringAsync();
-                ErrorMessage = s;
+                ErrorMessage = ex.Message + Environment.NewLine + s;
                 return false;
             }
             

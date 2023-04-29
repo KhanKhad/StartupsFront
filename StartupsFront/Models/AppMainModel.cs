@@ -8,7 +8,7 @@ namespace StartupsFront.Models
     {
         private UserModel _user;
 
-        public UserModel User
+        public UserModel UserOrNull
         {
             get => _user; 
             set

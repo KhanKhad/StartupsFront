@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace StartupsFront.Services
 {
@@ -13,6 +10,16 @@ namespace StartupsFront.Services
         public static string AppDataDirectory => Xamarin.Essentials.FileSystem.AppDataDirectory;
         public static string CacheDirectory => Xamarin.Essentials.FileSystem.CacheDirectory;
 
-        public static string ProfilePictureFileDirectory => AppDataDirectory;
+        public static string ProfilePictureDirectory => Path.Combine(AppDataDirectory, "profile");
+        public static string StartupsPicturesDirectory => Path.Combine(AppDataDirectory, "startups");
+
+
+        public static void Initialize()
+        {
+            if(!Directory.Exists(ProfilePictureDirectory)) 
+                Directory.CreateDirectory(ProfilePictureDirectory);
+            if(!Directory.Exists(StartupsPicturesDirectory))
+                Directory.CreateDirectory(StartupsPicturesDirectory);
+        }
     }
 }

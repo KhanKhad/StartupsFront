@@ -44,8 +44,8 @@ namespace StartupsFront.ViewModels
             var datastore = DataStore;
             datastore.MainModel.UserChanged += UserChanged;
 
-            if (datastore.MainModel.User !=  null)
-                UserChanged(datastore.MainModel.User);
+            if (datastore.MainModel.UserOrNull !=  null)
+                UserChanged(datastore.MainModel.UserOrNull);
 
             LoginOrRegisterCommand = new Command(async (o) => await LoginOrRegister_Cmd(o));
 
@@ -53,7 +53,7 @@ namespace StartupsFront.ViewModels
 
         private void UserChanged(UserModel user)
         {
-            ImageSource = Path.Combine(FileNames.ProfilePictureFileDirectory, user.ProfilePictFileName);
+            ImageSource = Path.Combine(FileNames.ProfilePictureDirectory, user.ProfilePictFileName);
             Name = user.Name;
         }
 

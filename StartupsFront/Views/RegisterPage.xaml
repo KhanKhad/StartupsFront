@@ -28,7 +28,9 @@
                     <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
                         <Button x:Name="Registerbutton" Text="Зарегистрироваться" Command="{Binding SignUpCommand}" CornerRadius="10"></Button>
                     </StackLayout>
-                    <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+                    <ScrollView HorizontalScrollBarVisibility="Default">
+                        <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+                    </ScrollView>
                 </StackLayout>
             </ScrollView>
         </Grid>
