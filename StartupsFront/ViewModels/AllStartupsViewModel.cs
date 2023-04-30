@@ -17,6 +17,8 @@ namespace StartupsFront.ViewModels
     {
         private string _errorMessage;
         private object _startupsLocker;
+        private string _successMessage;
+
         public INavigation Navigation { get; set; }
 
         public wObservableCollection<StartupViewModel> Startups { get; set; }
@@ -36,6 +38,16 @@ namespace StartupsFront.ViewModels
             }
         }
 
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set
+            {
+                _successMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
         public AllStartupsViewModel()
         {
             Startups = new wObservableCollection<StartupViewModel>();
@@ -48,6 +60,7 @@ namespace StartupsFront.ViewModels
         private async Task<bool> DataRefresh()
         {
             ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
             using (var client = new HttpClient())
             {
                 try
@@ -58,7 +71,13 @@ namespace StartupsFront.ViewModels
 
                     var responseString = await response.Content.ReadAsStringAsync();
 
-                    var ids = responseString.TrimStart('[').TrimEnd(']').Split(',');
+                    if (responseString == "[]")
+                    {
+                        SuccessMessage = "Success";
+                        return true;
+                    }
+
+                    var ids = responseString.Trim(new char[] {'[', ']' }).Split(',');
 
                     var tasks = new List<Task>();
 
@@ -75,13 +94,14 @@ namespace StartupsFront.ViewModels
                     {
                         ErrorMessage = ErrorMessage += Environment.NewLine + ex.Message;
                     }
+                    SuccessMessage = "Success";
                 }
                 catch (Exception ex)
                 {
                     ErrorMessage = ex.Message;
                 }
 
-                return false;
+                return true;
             }
         }
 
