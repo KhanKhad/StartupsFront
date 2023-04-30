@@ -19,6 +19,7 @@ namespace StartupsFront.ViewModels
         private string _startupDescription;
         private string _imageSource;
         private string _errorMessage;
+        private string _successMessage;
 
         public Command PickImageCommand { get; }
         public Command CreateStartupCommand { get; }
@@ -60,7 +61,15 @@ namespace StartupsFront.ViewModels
                 OnPropertyChanged();
             }
         }
-
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set
+            {
+                _successMessage = value;
+                OnPropertyChanged();
+            }
+        }
         public CreateStartupViewModel()
         {
             PickImageCommand = new Command(async () => await PickImage());
@@ -70,6 +79,8 @@ namespace StartupsFront.ViewModels
 
         private async Task CreateStartupAsync()
         {
+            ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
             await CreateStartupRequest();
         }
 
@@ -113,7 +124,10 @@ namespace StartupsFront.ViewModels
                         var answer = JsonConvert.DeserializeAnonymousType(responseString, answerDefinition);
 
                         if (answer.Result.Equals("Success", StringComparison.OrdinalIgnoreCase))
+                        {
+                            SuccessMessage = answer.Result;
                             return true;
+                        }
 
                         else ErrorMessage = answer.Result;
                     }

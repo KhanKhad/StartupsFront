@@ -9,8 +9,10 @@
         public const string UserPicturePropertyName = "profile_pic";
         public const string UserPictureFileName = "picture";
 
+        public const string StartupId = "startupid";
         public const string StartupName = "startupname";
         public const string StartupDescription = "startupdescription";
+        public const string StartupContributorsIds = "startupcontributorids";
         public const string StartupAuthorName = "startup_author";
         public const string StartupHash = "startuphash";
         public const string StartupPicturePropertyName = "startup_pic";

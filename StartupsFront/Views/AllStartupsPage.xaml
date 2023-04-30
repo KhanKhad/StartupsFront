@@ -5,33 +5,40 @@
              x:Class="StartupsFront.Views.AllStartupsPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="AllStartupsPage"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-
             <flv:FlowListView FlowColumnCount="2" SeparatorVisibility="None" HasUnevenRows="false"
 	FlowItemTappedCommand="{Binding StartupTappedCmd}" FlowLastTappedItem="{Binding LastTappedStartup}"
-	FlowItemsSource="{Binding Startups}" >
+	FlowItemsSource="{Binding Startups}" RowHeight="250" >
                 <flv:FlowListView.FlowColumnTemplate>
                     <DataTemplate>
 
-                        <Grid>
+                        <Grid Margin="5">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30*" />
-                                <ColumnDefinition Width="30*" />
-                                <ColumnDefinition Width="30*" />
-                            </Grid.ColumnDefinitions>
-                            <Label  Grid.Column="0" Text="{Binding Item2}"/>
-                            <Label  Grid.Column="1" Text="{Binding Description}"/>
-                            <Label Grid.Column="2" Text="{Binding Name}"/>
+
+                            <Grid Grid.Row="0">
+                                <Image Grid.ColumnSpan="3" Source="{Binding PictureFileName}"/>
+                            </Grid>
+
+                            <Grid Grid.Row="1" HorizontalOptions="CenterAndExpand">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                
+                                <Label Grid.Row="0" Text="{Binding Name}" FontAttributes="Bold"/>
+                                <Label Grid.Row="1" Text="{Binding Description}"/>
+                            </Grid>
+                            
                         </Grid>
 
                     </DataTemplate>
                 </flv:FlowListView.FlowColumnTemplate>
             </flv:FlowListView>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

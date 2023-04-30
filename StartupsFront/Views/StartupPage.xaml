@@ -4,9 +4,27 @@
              x:Class="StartupsFront.Views.StartupPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="StartupPage"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Image Grid.ColumnSpan="3" Source="{Binding PictureFileName}"/>
+                </Grid>
+
+                <Grid Grid.Row="1" HorizontalOptions="CenterAndExpand">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Text="{Binding Name}" FontAttributes="Bold"/>
+                    <Label Grid.Row="1" Text="{Binding Description}"/>
+                </Grid>
+
+            </Grid>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
