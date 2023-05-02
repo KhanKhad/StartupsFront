@@ -12,6 +12,7 @@ namespace StartupsFront.Services
 
         public static string ProfilePictureDirectory => Path.Combine(AppDataDirectory, "profile");
         public static string StartupsPicturesDirectory => Path.Combine(AppDataDirectory, "startups");
+        public static string UsersPicturesDirectory => Path.Combine(AppDataDirectory, "users");
 
 
         public static void Initialize()

@@ -28,26 +28,6 @@ namespace StartupsFront.ViewModels
         public Command StartupTappedCmd { get; set; }
         public Command RefreshCmd { get; set; }
 
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set
-            {
-                _successMessage = value;
-                OnPropertyChanged();
-            }
-        }
-
         public AllStartupsViewModel()
         {
             Startups = new wObservableCollection<StartupViewModel>();

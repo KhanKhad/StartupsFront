@@ -52,24 +52,7 @@ namespace StartupsFront.ViewModels
                 OnPropertyChanged();
             }
         }
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set
-            {
-                _successMessage = value;
-                OnPropertyChanged();
-            }
-        }
+
         public CreateStartupViewModel()
         {
             PickImageCommand = new Command(async () => await PickImage());
@@ -188,7 +171,7 @@ namespace StartupsFront.ViewModels
         }
 
         private const string _hashKey = "It's my startup!";
-        private Task<string> CalculateHash(string authorName, string authorToken)
+        private static Task<string> CalculateHash(string authorName, string authorToken)
         {
             using (SHA256 mySHA256 = SHA256.Create()) 
             {

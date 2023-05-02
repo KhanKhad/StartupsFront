@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace StartupsFront.ViewModels
@@ -35,15 +36,6 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
         public Command LoginCommand { get; }
         public Command RegisterPageCmd { get; }
         public Command ForgorPassPageCmd { get; }
@@ -70,35 +62,21 @@ namespace StartupsFront.ViewModels
         private async Task<bool> CheckLogAndPass()
         {
             var dataStore = DataStore;
-            var user = new UserModel();
-            
+
             var client = new HttpClient();
 
             var response = await client.GetAsync(Requests.Autenticate(_username, _password));
 
             try
             {
-                var userMultiform = await response.Content.ReadAsMultipartAsync();
+                var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
 
-                foreach (var content in userMultiform.Contents)
-                {
-                    switch (content.Headers.ContentDisposition.Name.ToLower())
-                    {
-                        case JsonConstants.UserName:
-                            user.Name = await content.ReadAsStringAsync();
-                            break;
-                        case JsonConstants.UserToken:
-                            user.Token = await content.ReadAsStringAsync();
-                            break;
-                        case JsonConstants.UserPicturePropertyName:
-                            var fileName = FileNames.ProfilePictureFileName + Path.GetExtension(content.Headers.ContentDisposition.FileName);
-                            var path = Path.Combine(FileNames.ProfilePictureDirectory, fileName);
-                            var bytes = await content.ReadAsByteArrayAsync();
-                            File.WriteAllBytes(path, bytes);
-                            user.ProfilePictFileName = fileName;
-                            break;
-                    }
-                }
+                var user = userParseResult.UserModel;
+                var fileName = FileNames.ProfilePictureFileName + Path.GetExtension(userParseResult.UserPictureName);
+                var path = Path.Combine(FileNames.ProfilePictureDirectory, fileName);
+                File.WriteAllBytes(path, userParseResult.UserPicture);
+                user.ProfilePictFileName = fileName;
+
                 dataStore.MainModel.UserOrNull = user;
             }
             catch(Exception ex)

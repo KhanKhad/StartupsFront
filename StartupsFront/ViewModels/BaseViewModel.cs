@@ -19,10 +19,24 @@ namespace StartupsFront.ViewModels
         }
 
         string title = string.Empty;
+        private string _errorMessage;
+        private string _successMessage;
+
         public string Title
         {
             get { return title; }
             set { SetProperty(ref title, value); }
+        }
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set { SetProperty(ref _errorMessage, value); }
+        }
+        public string SuccessMessage
+        {
+            get { return _successMessage; }
+            set { SetProperty(ref _successMessage, value); }
         }
 
         protected bool SetProperty<T>(ref T backingStore, T value,

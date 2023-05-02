@@ -62,15 +62,6 @@ namespace StartupsFront.ViewModels
                 OnPropertyChanged();
             }
         }
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
 
         public RegisterPageViewModel()
         {
