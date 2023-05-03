@@ -4,9 +4,20 @@
              x:Class="StartupsFront.Views.ChatsPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="ChatsPage"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <ListView ItemsSource="{Binding Chats}" SelectedItem="{Binding SelectedChat}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectedChat, Source={x:Reference listView}}"/>
+                            </Grid.GestureRecognizers>
+
+                            <Label Text="{Binding LastMessage}"/>
+
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

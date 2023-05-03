@@ -23,7 +23,6 @@ namespace StartupsFront.ViewModels
         private string _password;
         private string _password2;
         private string _imageSource;
-        private string _errorMessage;
         public string UserName
         {
             get { return _username; }

@@ -14,7 +14,6 @@ namespace StartupsFront.ViewModels
     {
         private string _username;
         private string _password;
-        private string _errorMessage;
 
         public string Login
         {
@@ -61,32 +60,31 @@ namespace StartupsFront.ViewModels
 
         private async Task<bool> CheckLogAndPass()
         {
-            var dataStore = DataStore;
-
-            var client = new HttpClient();
-
-            var response = await client.GetAsync(Requests.Autenticate(_username, _password));
-
-            try
+            using(var client = new HttpClient())
             {
-                var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
+                var dataStore = DataStore;
 
-                var user = userParseResult.UserModel;
-                var fileName = FileNames.ProfilePictureFileName + Path.GetExtension(userParseResult.UserPictureName);
-                var path = Path.Combine(FileNames.ProfilePictureDirectory, fileName);
-                File.WriteAllBytes(path, userParseResult.UserPicture);
-                user.ProfilePictFileName = fileName;
 
-                dataStore.MainModel.UserOrNull = user;
+
+                var response = await client.GetAsync(Requests.Autenticate(_username, _password));
+
+                try
+                {
+                    var userParseResult = await ResponseHelper.GetUserModelFromResponse(response, true);
+
+                    var user = userParseResult.UserModel;
+
+                    dataStore.MainModel.UserOrNull = user;
+                }
+                catch (Exception ex)
+                {
+                    var s = await response.Content.ReadAsStringAsync();
+                    ErrorMessage = ex.Message + Environment.NewLine + s;
+                    return false;
+                }
+
+                return true;
             }
-            catch(Exception ex)
-            {
-                var s = await response.Content.ReadAsStringAsync();
-                ErrorMessage = ex.Message + Environment.NewLine + s;
-                return false;
-            }
-            
-            return true;
         }
 
         private void ForgorPass_Cmd()

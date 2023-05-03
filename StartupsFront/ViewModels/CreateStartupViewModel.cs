@@ -18,8 +18,6 @@ namespace StartupsFront.ViewModels
         private string _startupName;
         private string _startupDescription;
         private string _imageSource;
-        private string _errorMessage;
-        private string _successMessage;
 
         public Command PickImageCommand { get; }
         public Command CreateStartupCommand { get; }
@@ -177,7 +175,7 @@ namespace StartupsFront.ViewModels
             {
                 var stream = new MemoryStream(Encoding.ASCII.GetBytes(authorName + authorToken + _hashKey));
                 var byteResult = mySHA256.ComputeHash(stream);
-                return Task.FromResult(Convert.ToBase64String(byteResult));
+                return Task.FromResult(Convert.ToBase64String(byteResult).Replace("+", "").Replace("/", ""));
             }
         }
     }

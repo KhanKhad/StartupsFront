@@ -4,7 +4,10 @@ using StartupsFront.Services;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace StartupsFront.ViewModels
@@ -20,33 +23,38 @@ namespace StartupsFront.ViewModels
 
         // команда отправки сообщений
         public Command SendMessageCommand { get; }
+        public INavigation Navigation { get; set; }
 
         public ChatViewModel(int userId)
         {
             Messages = new wObservableCollection<MessageModel>();
 
-            User = GetUserById(userId).Result;
-
+            //User = Task.Run(async () => await GetUserById(userId)).GetAwaiter().GetResult(); //видимо создаются два HttpClient в одном
+                                                                                             //потоке и нифига не работает без таск рана
+            //GetUserById(userId).GetAwaiter().GetResult();
             IsBusy = false;         // отправка сообщения не идет
 
             SendMessageCommand = new Command(async () => await SendMessage());
         }
 
+        public async Task SetUser(int userId)
+        {
+            var user = await GetUserById(userId);
+            User = user;
+        }
+
         private async Task<UserModel> GetUserById(int userId)
         {
-            var client = new HttpClient();
+            using(var client = new HttpClient())
+            {
+                var response = await client.GetAsync(Requests.GetUserById(userId));
 
-            var response = await client.GetAsync(Requests.GetUserById(userId));
+                var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
 
-            var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
+                var user = userParseResult.UserModel;
 
-            var user = userParseResult.UserModel;
-            
-            var path = Path.Combine(FileNames.UsersPicturesDirectory, userParseResult.UserPictureName);
-            File.WriteAllBytes(path, userParseResult.UserPicture);
-            user.ProfilePictFileName = path;
-
-            return user;
+                return user;
+            }
         }
 
 
@@ -62,7 +70,7 @@ namespace StartupsFront.ViewModels
             try
             {
                 IsBusy = true;
-                await SendMessage(string.Empty);
+                await SendMessage(MyMessage);
             }
             catch (Exception ex)
             {
@@ -76,7 +84,38 @@ namespace StartupsFront.ViewModels
 
         private async Task SendMessage(string message)
         {
-            await Task.CompletedTask;
+            using (var client = new HttpClient())
+            {
+                var user = DataStore.MainModel.UserOrNull;
+                var hash = await ChatsViewModel.CalculateHash(user.Name, user.Token);
+                var messageModel = new MessageJsonModel() { Message = message, Sender = user.Name, Recipient = User.Name, Hash = hash };
+
+                var content = JsonContent.Create(messageModel);
+
+                var response = await client.PostAsync(Requests.SendMessageUri, content);
+
+                var ans = await response.Content.ReadAsStringAsync();
+
+                if(response.IsSuccessStatusCode)
+                    SuccessMessage = ans;
+                else ErrorMessage = ans;
+            }
+            
         }
+    }
+
+    public class MessageJsonModel
+    {
+        [JsonPropertyName(JsonConstants.MessageText)]
+        public string Message { get; set; }
+
+        [JsonPropertyName(JsonConstants.MessageSender)]
+        public string Sender { get; set; }
+
+        [JsonPropertyName(JsonConstants.MessageRecipient)]
+        public string Recipient { get; set; }
+
+        [JsonPropertyName(JsonConstants.MessageHash)]
+        public string Hash { get; set; }
     }
 }

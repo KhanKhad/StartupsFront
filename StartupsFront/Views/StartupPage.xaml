@@ -22,6 +22,15 @@
 
                     <Label Grid.Row="0" Text="{Binding Name}" FontAttributes="Bold"/>
                     <Label Grid.Row="1" Text="{Binding Description}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Command="{Binding JoinToStartupCmd}" Text="Присоединиться"/>
+                        <Button Grid.Column="1" Command="{Binding ToChatCmd}" Text="Написать автору"/>
+                    </Grid>
                 </Grid>
 
             </Grid>

@@ -5,6 +5,7 @@
              x:Class="StartupsFront.Views.AllStartupsPage">
     <ContentPage.Content>
         <StackLayout>
+            <Button Text="Refresh" Command ="{Binding RefreshCmd}" />
             <flv:FlowListView FlowColumnCount="2" SeparatorVisibility="None" HasUnevenRows="false"
 	FlowItemTappedCommand="{Binding StartupTappedCmd}" FlowLastTappedItem="{Binding LastTappedStartup}"
 	FlowItemsSource="{Binding Startups}" RowHeight="250" >

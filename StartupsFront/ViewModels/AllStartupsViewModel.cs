@@ -15,9 +15,7 @@ namespace StartupsFront.ViewModels
 {
     public class AllStartupsViewModel : BaseViewModel
     {
-        private string _errorMessage;
         private object _startupsLocker;
-        private string _successMessage;
 
         public INavigation Navigation { get; set; }
 
@@ -39,6 +37,8 @@ namespace StartupsFront.ViewModels
 
         private async Task<bool> DataRefresh()
         {
+           // RefreshCmd.ChangeCanExecute();
+            Startups.Clear();
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
             using (var client = new HttpClient())
@@ -107,6 +107,9 @@ namespace StartupsFront.ViewModels
                             case JsonConstants.StartupId:
                                 startupModel.Id = await content.ReadAsStringAsync();
                                 break;
+                            case JsonConstants.StartupAuthorId:
+                                startupModel.AuthorId = int.Parse(await content.ReadAsStringAsync());
+                                break;
                             case JsonConstants.StartupName:
                                 startupModel.Name = await content.ReadAsStringAsync();
                                 break;
@@ -143,6 +146,8 @@ namespace StartupsFront.ViewModels
         private async Task StartupTapped()
         {
             var vm = LastTappedStartup;
+
+            //await LastTappedStartup.LoadAuthor();
 
             var page = new StartupPage()
             {

@@ -11,6 +11,7 @@
         public const string UserPictureFileName = "picture";
 
         public const string StartupId = "startupid";
+        public const string StartupAuthorId = "startupauthorid";
         public const string StartupName = "startupname";
         public const string StartupDescription = "startupdescription";
         public const string StartupContributorsIds = "startupcontributorids";

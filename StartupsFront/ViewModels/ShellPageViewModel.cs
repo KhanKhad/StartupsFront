@@ -7,6 +7,8 @@ namespace StartupsFront.ViewModels
 {
     public class ShellPageViewModel: BaseViewModel
     {
+        public static ShellPageViewModel Current { get; set; }
+
         public INavigation Navigation { get; set; }
 
         public AllStartupsViewModel AllStartupsViewModel { get; set; }
@@ -24,6 +26,8 @@ namespace StartupsFront.ViewModels
             CreateStartupViewModel = new CreateStartupViewModel() { Navigation = Navigation };
             ChatsViewModel = new ChatsViewModel() { Navigation = Navigation };
             ProfileViewModel = new ProfileViewModel() { Navigation = Navigation };
+
+            Current = this;
         }
     }
 }

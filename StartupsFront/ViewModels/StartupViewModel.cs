@@ -1,6 +1,10 @@
-﻿using System;
+﻿using StartupsFront.Models;
+using StartupsFront.Services;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace StartupsFront.ViewModels
@@ -11,7 +15,10 @@ namespace StartupsFront.ViewModels
         private string _id;
         private string _description;
         private string _pictureFileName;
+        private UserModel _author;
+        private UserModel[] _contributors;
 
+        public int AuthorId { get; set; }
         public string Id
         {
             get => _id;
@@ -52,11 +59,49 @@ namespace StartupsFront.ViewModels
             }
         }
 
+        public UserModel Author
+        {
+            get => _author;
+            set
+            {
+                _author = value;
+                OnPropertyChanged();
+            }
+        }
+
         public INavigation Navigation { get; internal set; }
+
+        public Command JoinToStartupCmd { get; }
+        public Command ToChatCmd { get; }
 
         public StartupViewModel()
         {
+            JoinToStartupCmd = new Command(async () => await JoinToStartup());
+            ToChatCmd = new Command(async () => await ToChat());
+        }
 
+        public async Task LoadAuthor()
+        {
+            using(var client = new HttpClient())
+            {
+                var response = await client.GetAsync(Requests.GetUserById(AuthorId));
+
+                var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
+
+                var user = userParseResult.UserModel;
+
+                Author = user;
+            }
+        }
+
+        private async Task ToChat()
+        {
+            await ShellPageViewModel.Current.ChatsViewModel.OpenChatWith(AuthorId);
+        }
+
+        private async Task JoinToStartup()
+        {
+            await Task.CompletedTask;
         }
     }
 }

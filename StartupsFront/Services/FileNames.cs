@@ -21,6 +21,8 @@ namespace StartupsFront.Services
                 Directory.CreateDirectory(ProfilePictureDirectory);
             if(!Directory.Exists(StartupsPicturesDirectory))
                 Directory.CreateDirectory(StartupsPicturesDirectory);
+            if (!Directory.Exists(UsersPicturesDirectory))
+                Directory.CreateDirectory(UsersPicturesDirectory);
         }
     }
 }

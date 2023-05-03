@@ -1,6 +1,7 @@
 ﻿using StartupsFront.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace StartupsFront.Services
 {
     public static class ResponseHelper
     {
-        public static async Task<UserModelFromResponse> GetUserModelFromResponse(HttpResponseMessage responseMessage)
+        public static async Task<UserModelFromResponse> GetUserModelFromResponse(HttpResponseMessage responseMessage, bool isMainUser = false)
         {
             var result = new UserModelFromResponse();
             var user = new UserModel();
@@ -36,6 +37,26 @@ namespace StartupsFront.Services
                         break;
                 }
             }
+
+            if (isMainUser)
+            {
+                var fileName = FileNames.ProfilePictureFileName + Path.GetExtension(result.UserPictureName);
+                var path = Path.Combine(FileNames.ProfilePictureDirectory, fileName);
+                File.WriteAllBytes(path, result.UserPicture);
+                user.ProfilePictFileName = fileName;
+            }
+            else
+            {
+                var path = Path.Combine(FileNames.UsersPicturesDirectory, result.UserPictureName);
+
+                if (!File.Exists(path))
+                {
+                    File.WriteAllBytes(path, result.UserPicture);
+                }
+
+                user.ProfilePictFileName = path;
+            }
+
             result.UserModel = user;
             return result;
         }
