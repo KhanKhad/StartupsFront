@@ -10,20 +10,26 @@ namespace StartupsFront.Models
     {
         [JsonPropertyName(JsonConstants.MessageId)]
         public int Id { get; set; }
+
         [JsonPropertyName(JsonConstants.MessageText)]
-
         public string Message { get; set; } = string.Empty;
-        [JsonPropertyName(JsonConstants.MessageSender)]
 
+        [JsonPropertyName(JsonConstants.MessageSenderId)]
         public int SenderForeignKey { get; set; }
-        [JsonPropertyName(JsonConstants.MessageRecipient)]
 
+        [JsonPropertyName(JsonConstants.MessageRecipientId)]
         public int RecipientForeignKey { get; set; }
 
+        [JsonPropertyName(JsonConstants.MessageSended)]
         public DateTime MessageSended { get; set; }
-        public DateTime Messagereaded { get; set; }
+        [JsonPropertyName(JsonConstants.MessageReaded)]
+        public DateTime MessageReaded { get; set; }
 
+        [JsonPropertyName(JsonConstants.MessageIsGetted)]
         public bool IsGetted { get; set; }
+        [JsonPropertyName(JsonConstants.MessageIsReaded)]
         public bool IsReaded { get; set; }
+        [JsonPropertyName(JsonConstants.MessageDelta)]
+        public int Delta { get; set; }
     }
 }

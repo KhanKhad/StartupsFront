@@ -19,6 +19,6 @@
         public static string GetStartupById(int id) => $"{GetStartupByIdUri}?id={id}";
         public static string GetUserById(int id) => $"{GetUserByIdUri}?id={id}";
         public static string GetMessagesDelta(string name) => $"{GetMessagesDeltaUri}?name={name}";
-        public static string GetMessages(string name, string hash, int delta) => $"{GetMessagesUri}?name={name}&hash={hash}";
+        public static string GetMessages(string name, string hash, int delta) => $"{GetMessagesUri}?name={name}&hash={hash}&delta={delta}";
     }
 }

@@ -17,7 +17,7 @@
                         <ViewCell>
                             <ViewCell.View>
                                 <StackLayout Orientation="Horizontal">
-                                    <Label Text="{Binding User}" FontAttributes="Bold" />
+                                   
                                     <Label Text="{Binding Message}" />
                                 </StackLayout>
                             </ViewCell.View>

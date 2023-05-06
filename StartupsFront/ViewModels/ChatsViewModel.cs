@@ -43,7 +43,7 @@ namespace StartupsFront.ViewModels
             _user = DataStore.MainModel.UserOrNull;
             DataStore.MainModel.UserChanged += UserChanged;
             _delta = 0;
-            _ = Task.Run(CheckDelta);
+            _ = CheckDelta();
         }
 
         public async Task OpenChatWith(int id)
@@ -129,7 +129,9 @@ namespace StartupsFront.ViewModels
                         {
                             chat = new ChatViewModel(message.SenderForeignKey) { Navigation = Navigation };
                             await chat.SetUser(message.SenderForeignKey);
-                            Chats.Insert(0, chat);
+
+                            Chats.Add(chat);
+
                         }
                         chat.AddMessage(message);
                     }

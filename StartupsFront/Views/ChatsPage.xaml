@@ -1,20 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="StartupsFront.Views.ChatsPage">
+             x:Class="StartupsFront.Views.ChatsPage"
+             xmlns:local="clr-namespace:StartupsFront.ViewModels"
+             >
     <ContentPage.Content>
         <StackLayout>
             <ListView ItemsSource="{Binding Chats}" SelectedItem="{Binding SelectedChat}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding SelectedChat, Source={x:Reference listView}}"/>
-                            </Grid.GestureRecognizers>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:ChatsViewModel}}, Path=ChatClick}"/>
+                                </Grid.GestureRecognizers>
+                                <Label Text="{Binding User.Name}" FontAttributes="Bold" />
+                                <Label Text="{Binding LastMessage}"/>
 
-                            <Label Text="{Binding LastMessage}"/>
-
-                        </Grid>
+                            </Grid>
+                        </ViewCell>
+                        
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

@@ -14,9 +14,28 @@ namespace StartupsFront.ViewModels
 {
     public class ChatViewModel : BaseViewModel
     {
+        private string _lastMessage;
+        private string _myMessage;
+
         public UserModel User { get; set; }
-        public string LastMessage { get; set; }
-        public string MyMessage { get; set; }
+        public string LastMessage
+        {
+            get => _lastMessage; 
+            set
+            {
+                _lastMessage = value;
+                OnPropertyChanged();
+            }
+        }
+        public string MyMessage
+        {
+            get => _myMessage; 
+            set
+            {
+                _myMessage = value;
+                OnPropertyChanged();
+            }
+        }
 
         // список всех полученных сообщений
         public wObservableCollection<MessageModel> Messages { get; }
@@ -29,11 +48,6 @@ namespace StartupsFront.ViewModels
         {
             Messages = new wObservableCollection<MessageModel>();
 
-            //User = Task.Run(async () => await GetUserById(userId)).GetAwaiter().GetResult(); //видимо создаются два HttpClient в одном
-                                                                                             //потоке и нифига не работает без таск рана
-            //GetUserById(userId).GetAwaiter().GetResult();
-            IsBusy = false;         // отправка сообщения не идет
-
             SendMessageCommand = new Command(async () => await SendMessage());
         }
 
@@ -45,7 +59,7 @@ namespace StartupsFront.ViewModels
 
         private async Task<UserModel> GetUserById(int userId)
         {
-            using(var client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(Requests.GetUserById(userId));
 
@@ -96,11 +110,11 @@ namespace StartupsFront.ViewModels
 
                 var ans = await response.Content.ReadAsStringAsync();
 
-                if(response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                     SuccessMessage = ans;
                 else ErrorMessage = ans;
             }
-            
+
         }
     }
 
@@ -109,10 +123,10 @@ namespace StartupsFront.ViewModels
         [JsonPropertyName(JsonConstants.MessageText)]
         public string Message { get; set; }
 
-        [JsonPropertyName(JsonConstants.MessageSender)]
+        [JsonPropertyName(JsonConstants.MessageSenderName)]
         public string Sender { get; set; }
 
-        [JsonPropertyName(JsonConstants.MessageRecipient)]
+        [JsonPropertyName(JsonConstants.MessageRecipientName)]
         public string Recipient { get; set; }
 
         [JsonPropertyName(JsonConstants.MessageHash)]

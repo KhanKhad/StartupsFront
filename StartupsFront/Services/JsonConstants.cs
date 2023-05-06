@@ -22,8 +22,16 @@
 
         public const string MessageId = "messageid";
         public const string MessageText = "messagetext";
-        public const string MessageSender = "messagesender";
-        public const string MessageRecipient = "messagerecipient";
+        public const string MessageSenderName = "messagesendername";
+        public const string MessageRecipientName = "messagerecipientname";
+        public const string MessageSenderId = "messagesenderid";
+        public const string MessageRecipientId = "messagerecipientid";
         public const string MessageHash = "messagehash";
+
+        public const string MessageSended = "messagesended";
+        public const string MessageReaded = "messagereaded";
+        public const string MessageIsGetted = "messageisgetted";
+        public const string MessageIsReaded = "messageisreaded";
+        public const string MessageDelta = "messagedelta";
     }
 }
