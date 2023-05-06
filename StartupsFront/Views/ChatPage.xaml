@@ -16,10 +16,15 @@
                     <DataTemplate>
                         <ViewCell>
                             <ViewCell.View>
-                                <StackLayout Orientation="Horizontal">
-                                   
-                                    <Label Text="{Binding Message}" />
-                                </StackLayout>
+                                <Grid>
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Text="{Binding Owner}" Grid.Column="0" FontAttributes="Bold" />
+                                    <Label Text="{Binding Message}" Grid.Column="1"/>
+                                </Grid>
                             </ViewCell.View>
                         </ViewCell>
                     </DataTemplate>

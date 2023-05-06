@@ -32,6 +32,12 @@ namespace StartupsFront.ViewModels
             {
                 _selectedChat = value;
                 OnPropertyChanged();
+
+                if(value != null)
+                {
+                    ChatClick.Execute(null);
+                    SelectedChat = null;
+                }  
             }
         }
 
@@ -93,17 +99,26 @@ namespace StartupsFront.ViewModels
                                     await GetAllMessages(_delta);
                                     _delta = newDelta;
                                 }
-                                SuccessMessage = "Success";
+                                Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
+                                {
+                                    SuccessMessage = "Success";
+                                });
                             }
-                            else ErrorMessage += responseString;
+                            else
+                            {
+                                ErrorMessage += responseString;
+                            }
                         }
                         catch (Exception ex)
                         {
-                            ErrorMessage += ex.Message;
+                            Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
+                            {
+                                ErrorMessage += ex.Message;
+                            });
                         }
                     }
                 }
-                await Task.Delay(1000);
+                await Task.Delay(10000);
             }
         }
 
@@ -113,7 +128,10 @@ namespace StartupsFront.ViewModels
             {
                 try
                 {
+                    var myId = _user.Id;
+
                     var hash = await CalculateHash(_user.Name, _user.Token);
+
                     var uri = Requests.GetMessages(_user.Name, hash, delta);
 
                     var response = await client.GetAsync(uri);
@@ -122,18 +140,39 @@ namespace StartupsFront.ViewModels
                     
                     var messages = ParseMessages(responseString);
 
-                    foreach (var message in messages)
+                    var messagesToMe = messages.Where(i => i.RecipientForeignKey == myId).ToArray();
+
+                    var messagesFromMe = messages.Where(i => i.SenderForeignKey == myId).ToArray();
+
+                    var chats = new Dictionary<int, ChatModel>();
+
+                    foreach ( var message in messagesToMe)
                     {
-                        var chat = Chats.FirstOrDefault(i=>i.User.Id == message.SenderForeignKey);
-                        if(chat == null)
+                        if (chats.TryGetValue(message.SenderForeignKey, out ChatModel chatModel))
+                            chatModel.MessagesToMe.Add(message);
+                        else 
                         {
-                            chat = new ChatViewModel(message.SenderForeignKey) { Navigation = Navigation };
-                            await chat.SetUser(message.SenderForeignKey);
-
-                            Chats.Add(chat);
-
+                            var chat = new ChatModel();
+                            chat.MessagesToMe.Add(message);
+                            chats.Add(message.SenderForeignKey, chat);
                         }
-                        chat.AddMessage(message);
+                    }
+
+                    foreach (var message in messagesFromMe)
+                    {
+                        if (chats.TryGetValue(message.RecipientForeignKey, out ChatModel chatModel))
+                            chatModel.MessagesFromMe.Add(message);
+                        else
+                        {
+                            var chat = new ChatModel();
+                            chat.MessagesFromMe.Add(message);
+                            chats.Add(message.RecipientForeignKey, chat);
+                        }
+                    }
+
+                    foreach ( var chatKey in chats.Keys)
+                    {
+                        await CreateChat(chatKey, chats[chatKey]);
                     }
                 }
                 catch (Exception ex)
@@ -142,6 +181,42 @@ namespace StartupsFront.ViewModels
                 }
             }
         }
+
+        public async Task CreateChat(int chatCompanionId, ChatModel chatModel)
+        {
+            try
+            {
+
+                var chat = Chats.FirstOrDefault(i => i.Сompanion.Id == chatCompanionId);
+
+                var chatNotExist = chat == null;
+
+                if (chatNotExist)
+                {
+                    chat = new ChatViewModel(chatCompanionId) { Navigation = Navigation };
+                    await chat.SetUser(chatCompanionId);
+                }
+
+                var messagesInChat = chatModel.GetAllMessagesSortedByMyDelta();
+
+                
+                Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
+                {
+                    foreach (var message in messagesInChat)
+                    {
+                        chat.AddMessage(message);
+                    }
+
+                    if(chatNotExist)
+                        Chats.Add(chat);
+                });
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
 
         public List<MessageModel> ParseMessages(string input)
         {
@@ -152,6 +227,8 @@ namespace StartupsFront.ViewModels
         private void UserChanged(UserModel obj)
         {
             _user = obj;
+            _delta = 0;
+            Chats.Clear();
         }
 
 
@@ -164,6 +241,57 @@ namespace StartupsFront.ViewModels
                 var byteResult = mySHA256.ComputeHash(stream);
                 return Task.FromResult(Convert.ToBase64String(byteResult).Replace("+", "").Replace("/", ""));
             }
+        }
+    }
+
+    public class ChatModel {
+        public List <MessageModel> MessagesToMe { get; set;}
+        public List <MessageModel> MessagesFromMe { get; set;}
+
+        public ChatModel() 
+        {
+            MessagesToMe = new List<MessageModel>();
+            MessagesFromMe = new List<MessageModel>();
+        }
+
+        public List<MessageModel> GetAllMessagesSortedByMyDelta()
+        {
+            var result = new List<MessageModel>();
+
+            var messagesToMe = MessagesToMe.OrderBy(i => i.RecipientDelta).ToList();
+
+            var messagesFromMe = MessagesFromMe.OrderBy(i => i.SenderDelta).ToList();
+
+            while (messagesToMe.Count > 0 || messagesFromMe.Count > 0)
+            {
+                if (messagesToMe.Count > 0 && messagesFromMe.Count > 0)
+                {
+                    if (messagesToMe[0].RecipientDelta < messagesFromMe[0].SenderDelta)
+                    {
+                        result.Add(messagesToMe[0]);
+                        messagesToMe.RemoveAt(0);
+                    }
+                    else
+                    {
+                        result.Add(messagesFromMe[0]);
+                        messagesFromMe.RemoveAt(0);
+                    }
+                }
+                else
+                {
+                    if (messagesToMe.Count > 0)
+                    {
+                        result.Add(messagesToMe[0]);
+                        messagesToMe.RemoveAt(0);
+                    }
+                    else
+                    {
+                        result.Add(messagesFromMe[0]);
+                        messagesFromMe.RemoveAt(0);
+                    }
+                }
+            }
+            return result;
         }
     }
 }

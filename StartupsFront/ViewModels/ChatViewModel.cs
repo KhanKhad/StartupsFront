@@ -3,6 +3,7 @@ using StartupsFront.MVVM;
 using StartupsFront.Services;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -17,7 +18,8 @@ namespace StartupsFront.ViewModels
         private string _lastMessage;
         private string _myMessage;
 
-        public UserModel User { get; set; }
+        public UserModel Сompanion { get; set; }
+        public UserModel Me { get; set; }
         public string LastMessage
         {
             get => _lastMessage; 
@@ -38,7 +40,7 @@ namespace StartupsFront.ViewModels
         }
 
         // список всех полученных сообщений
-        public wObservableCollection<MessageModel> Messages { get; }
+        public wObservableCollection<MessageViewModel> Messages { get; }
 
         // команда отправки сообщений
         public Command SendMessageCommand { get; }
@@ -46,7 +48,8 @@ namespace StartupsFront.ViewModels
 
         public ChatViewModel(int userId)
         {
-            Messages = new wObservableCollection<MessageModel>();
+            Me = DataStore.MainModel.UserOrNull;
+            Messages = new wObservableCollection<MessageViewModel>();
 
             SendMessageCommand = new Command(async () => await SendMessage());
         }
@@ -54,7 +57,7 @@ namespace StartupsFront.ViewModels
         public async Task SetUser(int userId)
         {
             var user = await GetUserById(userId);
-            User = user;
+            Сompanion = user;
         }
 
         private async Task<UserModel> GetUserById(int userId)
@@ -74,7 +77,14 @@ namespace StartupsFront.ViewModels
 
         public void AddMessage(MessageModel message)
         {
-            Messages.Insert(0, message);
+            if (Messages.FirstOrDefault(i=>i.Id == message.Id) != null) return;
+            var owner = string.Empty;
+
+            if (message.RecipientForeignKey == Сompanion.Id)
+                owner = Me.Name;
+            else owner = Сompanion.Name;
+
+            Messages.Add(new MessageViewModel(message, owner));
             LastMessage = message.Message;
         }
 
@@ -102,7 +112,7 @@ namespace StartupsFront.ViewModels
             {
                 var user = DataStore.MainModel.UserOrNull;
                 var hash = await ChatsViewModel.CalculateHash(user.Name, user.Token);
-                var messageModel = new MessageJsonModel() { Message = message, Sender = user.Name, Recipient = User.Name, Hash = hash };
+                var messageModel = new MessageJsonModel() { Message = message, Sender = user.Name, Recipient = Сompanion.Name, Hash = hash };
 
                 var content = JsonContent.Create(messageModel);
 

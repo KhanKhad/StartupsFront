@@ -32,6 +32,7 @@
         public const string MessageReaded = "messagereaded";
         public const string MessageIsGetted = "messageisgetted";
         public const string MessageIsReaded = "messageisreaded";
-        public const string MessageDelta = "messagedelta";
+        public const string MessageRecipientDelta = "messagerecipientdelta";
+        public const string MessageSenderDelta = "messagesenderdelta";
     }
 }

@@ -29,7 +29,10 @@ namespace StartupsFront.Models
         public bool IsGetted { get; set; }
         [JsonPropertyName(JsonConstants.MessageIsReaded)]
         public bool IsReaded { get; set; }
-        [JsonPropertyName(JsonConstants.MessageDelta)]
-        public int Delta { get; set; }
+
+        [JsonPropertyName(JsonConstants.MessageRecipientDelta)]
+        public int RecipientDelta { get; set; }
+        [JsonPropertyName(JsonConstants.MessageSenderDelta)]
+        public int SenderDelta { get; set; }
     }
 }
