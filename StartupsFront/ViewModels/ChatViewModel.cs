@@ -46,7 +46,7 @@ namespace StartupsFront.ViewModels
         public Command SendMessageCommand { get; }
         public INavigation Navigation { get; set; }
 
-        public ChatViewModel(int userId)
+        public ChatViewModel()
         {
             Me = DataStore.MainModel.UserOrNull;
             Messages = new wObservableCollection<MessageViewModel>();
@@ -56,22 +56,8 @@ namespace StartupsFront.ViewModels
 
         public async Task SetUser(int userId)
         {
-            var user = await GetUserById(userId);
+            var user = await ResponseHelper.GetUserById(userId);
             Сompanion = user;
-        }
-
-        private async Task<UserModel> GetUserById(int userId)
-        {
-            using (var client = new HttpClient())
-            {
-                var response = await client.GetAsync(Requests.GetUserById(userId));
-
-                var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
-
-                var user = userParseResult.UserModel;
-
-                return user;
-            }
         }
 
 
@@ -85,7 +71,7 @@ namespace StartupsFront.ViewModels
             else owner = Сompanion.Name;
 
             Messages.Add(new MessageViewModel(message, owner));
-            LastMessage = message.Message;
+            LastMessage = $"{owner}: {message.Message}";
         }
 
         // Отправка сообщения
@@ -95,6 +81,7 @@ namespace StartupsFront.ViewModels
             {
                 IsBusy = true;
                 await SendMessage(MyMessage);
+                MyMessage = string.Empty;
             }
             catch (Exception ex)
             {

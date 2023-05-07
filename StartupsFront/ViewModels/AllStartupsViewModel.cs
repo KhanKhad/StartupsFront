@@ -88,66 +88,24 @@ namespace StartupsFront.ViewModels
 
         private async Task GetStartupById(int id)
         {
-            using (var client = new HttpClient())
+            var startupModel = new StartupViewModel() { Navigation = Navigation };
+
+            var startup = await ResponseHelper.GetStartupById(id);
+            startupModel.Id = id;
+            startupModel.AuthorId = startup.AuthorForeignKey;
+            startupModel.Name = startup.Name;
+            startupModel.Description = startup.Description;
+            startupModel.PictureFileName = startup.StartupPicFileName;
+
+            lock (_startupsLocker)
             {
-                var startupModel = new StartupViewModel() { Navigation = Navigation };
-
-                var uri = Requests.GetStartupById(id);
-                
-                var response = await client.GetAsync(uri);
-
-                try
-                {
-                    var startupMultiform = await response.Content.ReadAsMultipartAsync();
-
-                    foreach (var content in startupMultiform.Contents)
-                    {
-                        switch (content.Headers.ContentDisposition.Name.ToLower())
-                        {
-                            case JsonConstants.StartupId:
-                                startupModel.Id = await content.ReadAsStringAsync();
-                                break;
-                            case JsonConstants.StartupAuthorId:
-                                startupModel.AuthorId = int.Parse(await content.ReadAsStringAsync());
-                                break;
-                            case JsonConstants.StartupName:
-                                startupModel.Name = await content.ReadAsStringAsync();
-                                break;
-                            case JsonConstants.StartupDescription:
-                                startupModel.Description = await content.ReadAsStringAsync();
-                                break;
-                            case JsonConstants.StartupPicturePropertyName:
-                                var fileName = content.Headers.ContentDisposition.FileName;
-                                var path = Path.Combine(FileNames.StartupsPicturesDirectory, fileName);
-                                if (!File.Exists(path))
-                                {
-                                    var bytes = await content.ReadAsByteArrayAsync();
-                                    File.WriteAllBytes(path, bytes);
-                                }
-                                startupModel.PictureFileName = path;
-                                break;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var s = await response.Content.ReadAsStringAsync();
-                    var msg = ex.Message + Environment.NewLine + s;
-                    throw new Exception(msg);
-                }
-
-                lock (_startupsLocker)
-                {
-                    Startups.Add(startupModel);
-                }
+                Startups.Add(startupModel);
             }
         }
 
         private async Task StartupTapped()
         {
             var vm = LastTappedStartup;
-
-            //await LastTappedStartup.LoadAuthor();
 
             var page = new StartupPage()
             {

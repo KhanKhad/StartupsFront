@@ -54,7 +54,7 @@ namespace StartupsFront.ViewModels
 
         public async Task OpenChatWith(int id)
         {
-            var chat = new ChatViewModel(id) { Navigation = Navigation };
+            var chat = new ChatViewModel() { Navigation = Navigation };
             await chat.SetUser(id);
             Chats.Insert(0, chat);
 
@@ -118,7 +118,7 @@ namespace StartupsFront.ViewModels
                         }
                     }
                 }
-                await Task.Delay(10000);
+                await Task.Delay(2000);
             }
         }
 
@@ -177,7 +177,10 @@ namespace StartupsFront.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    ErrorMessage = ex.Message;
+                    Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
+                    {
+                        ErrorMessage += ex.Message;
+                    });
                 }
             }
         }
@@ -193,7 +196,7 @@ namespace StartupsFront.ViewModels
 
                 if (chatNotExist)
                 {
-                    chat = new ChatViewModel(chatCompanionId) { Navigation = Navigation };
+                    chat = new ChatViewModel() { Navigation = Navigation };
                     await chat.SetUser(chatCompanionId);
                 }
 
@@ -213,7 +216,10 @@ namespace StartupsFront.ViewModels
             }
             catch(Exception ex)
             {
-
+                Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
+                {
+                    ErrorMessage += ex.Message;
+                });
             }
         }
 

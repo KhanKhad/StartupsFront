@@ -70,9 +70,7 @@ namespace StartupsFront.ViewModels
 
                 try
                 {
-                    var userParseResult = await ResponseHelper.GetUserModelFromResponse(response, true);
-
-                    var user = userParseResult.UserModel;
+                    var user = await ResponseHelper.GetUserModelFromResponse(response, true);
 
                     dataStore.MainModel.UserOrNull = user;
                 }

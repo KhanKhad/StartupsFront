@@ -12,14 +12,14 @@ namespace StartupsFront.ViewModels
     public class StartupViewModel : BaseViewModel
     {
         private string _name;
-        private string _id;
+        private int _id;
         private string _description;
         private string _pictureFileName;
         private UserModel _author;
         private UserModel[] _contributors;
 
         public int AuthorId { get; set; }
-        public string Id
+        public int Id
         {
             get => _id;
             set
@@ -78,20 +78,6 @@ namespace StartupsFront.ViewModels
         {
             JoinToStartupCmd = new Command(async () => await JoinToStartup());
             ToChatCmd = new Command(async () => await ToChat());
-        }
-
-        public async Task LoadAuthor()
-        {
-            using(var client = new HttpClient())
-            {
-                var response = await client.GetAsync(Requests.GetUserById(AuthorId));
-
-                var userParseResult = await ResponseHelper.GetUserModelFromResponse(response);
-
-                var user = userParseResult.UserModel;
-
-                Author = user;
-            }
         }
 
         private async Task ToChat()
