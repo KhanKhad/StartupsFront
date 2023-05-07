@@ -123,6 +123,7 @@ namespace StartupsFront.ViewModels
                         {
                             return true;
                         }
+                        else ErrorMessage = answer.Result;
                     }
                     catch
                     {

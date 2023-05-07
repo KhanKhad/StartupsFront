@@ -52,11 +52,16 @@ namespace StartupsFront.ViewModels
             _ = CheckDelta();
         }
 
-        public async Task OpenChatWith(int id)
+        public async Task OpenChatWith(int chatCompanionId)
         {
-            var chat = new ChatViewModel() { Navigation = Navigation };
-            await chat.SetUser(id);
-            Chats.Insert(0, chat);
+            var chat = Chats.FirstOrDefault(i => i.Сompanion.Id == chatCompanionId);
+
+            if (chat == null)
+            {
+                chat = new ChatViewModel() { Navigation = Navigation };
+                await chat.SetUser(chatCompanionId);
+                Chats.Add(chat);
+            }
 
             await OpenChat(chat);
         }

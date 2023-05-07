@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,6 +66,9 @@ namespace StartupsFront.Services
                                 break;
                             case JsonConstants.StartupDescription:
                                 startupModel.Description = await content.ReadAsStringAsync();
+                                break;
+                            case JsonConstants.StartupContributorsIds:
+                                startupModel.Contributors = (await content.ReadAsStringAsync()).Split(',').Select(i=> int.Parse(i)).ToList();
                                 break;
                             case JsonConstants.StartupPicturePropertyName:
                                 var fileName = content.Headers.ContentDisposition.FileName;

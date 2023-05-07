@@ -19,6 +19,6 @@ namespace StartupsFront.Models
         public string Viewers { get; set; } = string.Empty;
         public DateTime LastModify { get; set; }
 
-        public List<UserModel> Contributors { get; set; } = new List<UserModel>();
+        public List<int> Contributors { get; set; } = new List<int>();
     }
 }
