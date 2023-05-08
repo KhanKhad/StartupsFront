@@ -28,12 +28,12 @@ namespace StartupsFront.ViewModels
             set { SetProperty(ref title, value); }
         }
 
-        public string ErrorMessage
+        public virtual string ErrorMessage
         {
             get { return _errorMessage; }
             set { SetProperty(ref _errorMessage, value); }
         }
-        public string SuccessMessage
+        public virtual string SuccessMessage
         {
             get { return _successMessage; }
             set { SetProperty(ref _successMessage, value); }

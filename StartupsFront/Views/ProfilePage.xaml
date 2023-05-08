@@ -12,22 +12,44 @@
             <Label Text="{Binding Name}"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
-            <ListView ItemsSource="{Binding StartupsRequestes}" SelectedItem="{Binding StartupsRequest, Mode=TwoWay}" CachingStrategy="RecycleElement" >
+            <ListView ItemsSource="{Binding StartupRequests}" SelectedItem="{Binding StartupsRequest, Mode=TwoWay}" RowHeight="100" CachingStrategy="RecycleElement" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Text="Отклонить" Grid.Column="0" Command="{Binding RejectCmd}"/>
-                                <Button Text="Принять" Grid.Column="1" Command="{Binding AcceptCmd}"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Text="{Binding Startup.Name, StringFormat='Стартап: {0}'}" HorizontalOptions="Center" Grid.Column="0"/>
+                                    <Label Text="{Binding User.Name, StringFormat='Пользователь: {0}'}" HorizontalOptions="Center" Grid.Column="1"/>
+                                </Grid>
+
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Text="Отклонить" Grid.Column="0" Command="{Binding RejectCmd}"/>
+                                    <Button Text="Принять" Grid.Column="1" Command="{Binding AcceptCmd}"/>
+                                </Grid>
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding SuccessMessage}" FontSize="25" TextColor = "Green" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -47,6 +47,7 @@ namespace StartupsFront.ViewModels
         public Command LoginOrRegisterCommand { get; }
 
         public wObservableCollection<StartupRequestViewModel> StartupRequests { get; set; }
+        public StartupRequestViewModel StartupRequest { get; set; }
 
         public ProfileViewModel()
         {
@@ -80,9 +81,10 @@ namespace StartupsFront.ViewModels
 
                             if (int.TryParse(responseString, out var newDelta))
                             {
-                                if (newDelta != 0)
+                                if (newDelta != _startupsDelta)
                                 {
                                     await GetAllStartupsRequestes();
+                                    _startupsDelta = newDelta;
                                 }
                                 Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
                                 {
@@ -144,7 +146,14 @@ namespace StartupsFront.ViewModels
 
                     Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
                     {
+                        foreach (var req in requestesViewModels)
+                        {
+                            req.ErrorMessageAct += ErrorMessageInRequest;
+                            req.SuccessMessageAct += SuccessMessageInRequest;
+                            req.NeedToRemoveMe += NeedToRemoveRequest;
+                        }
                         StartupRequests.AddRange(requestesViewModels);
+
                     });
                 }
                 catch (Exception ex)
@@ -155,6 +164,21 @@ namespace StartupsFront.ViewModels
                     });
                 }
             }
+        }
+
+        private void NeedToRemoveRequest(StartupRequestViewModel obj)
+        {
+            StartupRequests.Remove(obj);
+        }
+
+        private void SuccessMessageInRequest(string obj)
+        {
+            SuccessMessage = obj;
+        }
+
+        private void ErrorMessageInRequest(string obj)
+        {
+            ErrorMessage = obj;
         }
 
         public async Task<List<StartupRequestViewModel>> CreateStartupRequestAsync(StartupJoinRequestJsonModel request)

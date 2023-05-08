@@ -1,4 +1,5 @@
-﻿using StartupsFront.Models;
+﻿using Newtonsoft.Json;
+using StartupsFront.Models;
 using StartupsFront.Services;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
+        public UserModel Me { get; set; }
         public UserModel Author
         {
             get => _author;
@@ -78,6 +80,13 @@ namespace StartupsFront.ViewModels
         {
             JoinToStartupCmd = new Command(async () => await JoinToStartup());
             ToChatCmd = new Command(async () => await ToChat());
+            Me = DataStore.MainModel.UserOrNull;
+            DataStore.MainModel.UserChanged += UserChanged;
+        }
+
+        private void UserChanged(UserModel obj)
+        {
+            Me = obj;
         }
 
         private async Task ToChat()
@@ -87,7 +96,41 @@ namespace StartupsFront.ViewModels
 
         private async Task JoinToStartup()
         {
-            await Task.CompletedTask;
+            ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    var hash = await Requests.GetProfileHashAsync(Me.Name, Me.Token);
+
+                    var uri = Requests.TryToJoinToStartup(Me.Id, hash, _id);
+
+                    var response = await client.GetAsync(uri);
+
+                    var responseString = await response.Content.ReadAsStringAsync();
+
+                    try
+                    {
+                        var answerDefinition = new { Result = "" };
+
+                        var answer = JsonConvert.DeserializeAnonymousType(responseString, answerDefinition);
+
+                        if (answer.Result.Equals("RequestSended", StringComparison.OrdinalIgnoreCase))
+                            SuccessMessage = answer.Result;
+
+                        else ErrorMessage = answer.Result;
+                    }
+                    catch
+                    {
+                        ErrorMessage = responseString;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = ex.Message;
+                }
+            }
         }
     }
 }

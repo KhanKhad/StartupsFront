@@ -19,9 +19,9 @@ namespace StartupsFront
             MainPage = mainPage;
         }
 
-        private async void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            await MainPage.DisplayAlert("Error", e.ExceptionObject.ToString(), "Ok");
+            MainPage.DisplayAlert("Error", e.ExceptionObject.ToString(), "Ok");
         }
 
         protected override void OnStart()

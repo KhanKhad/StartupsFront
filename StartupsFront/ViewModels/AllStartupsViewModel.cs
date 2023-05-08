@@ -37,7 +37,6 @@ namespace StartupsFront.ViewModels
 
         private async Task<bool> DataRefresh()
         {
-           // RefreshCmd.ChangeCanExecute();
             Startups.Clear();
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
@@ -59,22 +58,18 @@ namespace StartupsFront.ViewModels
 
                     var ids = responseString.Trim(new char[] {'[', ']' }).Split(',');
 
-                    var tasks = new List<Task>();
-
-                    foreach ( var id in ids)
-                    {
-                        var task = GetStartupById(int.Parse(id));
-                        tasks.Add(task);
-                    }
                     try
                     {
-                        await Task.WhenAll(tasks);
+                        foreach (var id in ids)
+                        {
+                            await GetStartupById(int.Parse(id));
+                        }
+                        SuccessMessage = "Success";
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        ErrorMessage = ErrorMessage += Environment.NewLine + ex.Message;
+                        ErrorMessage = responseString += Environment.NewLine + ex.Message;
                     }
-                    SuccessMessage = "Success";
                 }
                 catch (Exception ex)
                 {

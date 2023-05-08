@@ -9,6 +9,7 @@ namespace StartupsFront.Services
     public static class Requests
     {
         public const string Url = "http://46.183.163.170:8888/";
+        //public const string Url = "http://localhost/";
 
         public const string ProfileController = "Profile/";
         public const string StartupsController = "Startups/";

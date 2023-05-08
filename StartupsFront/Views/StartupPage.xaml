@@ -34,6 +34,12 @@
                 </Grid>
 
             </Grid>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
+            <ScrollView HorizontalScrollBarVisibility="Default">
+                <Label Text="{Binding SuccessMessage}" FontSize="25" TextColor = "Green" HorizontalOptions="Center" FontAttributes="Bold"></Label>
+            </ScrollView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

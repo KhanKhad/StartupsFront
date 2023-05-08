@@ -1,5 +1,6 @@
 ﻿using StartupsFront.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,30 +12,22 @@ namespace StartupsFront.Services
 {
     public static class ResponseHelper
     {
-        private static readonly Dictionary<int, UserModel> _loadedUsers = new Dictionary<int, UserModel>();
-        private static readonly Dictionary<int, StartupModel> _loadedStartups = new Dictionary<int, StartupModel>();
-        private static readonly List<int> _loadingUsers= new List<int>();
-        private static readonly List<int> _loadingStartups= new List<int>();
+        private static readonly ConcurrentDictionary<int, UserModel> _loadedUsers = new ConcurrentDictionary<int, UserModel>();
+        private static readonly ConcurrentDictionary<int, StartupModel> _loadedStartups = new ConcurrentDictionary<int, StartupModel>();
+        private static readonly ConcurrentDictionary<int, bool> _loadingUsers= new ConcurrentDictionary<int, bool>();
+        private static readonly ConcurrentDictionary<int, bool> _loadingStartups = new ConcurrentDictionary<int, bool>();
         public static async Task<UserModel> GetUserById(int userId, bool isMainUser = false)
         {
             if (!isMainUser)
             {
-                bool isLoading;
-
-                lock (_loadingUsers)
+                if(!_loadingUsers.TryAdd(userId, false))
                 {
-                    isLoading = _loadingUsers.Contains(userId);
-                    if (!isLoading)
-                        _loadingUsers.Add(userId);
-                }
+                    bool isLoaded = false;
 
-                while (isLoading)
-                {
-                    await Task.Delay(500);
-
-                    lock (_loadingUsers)
+                    while (isLoaded)
                     {
-                        isLoading = _loadingUsers.Contains(userId);
+                        await Task.Delay(500);
+                        _loadingUsers.TryGetValue(userId, out isLoaded);
                     }
                 }
             }
@@ -48,18 +41,11 @@ namespace StartupsFront.Services
                 userModel = await GetUserModelFromResponse(response, isMainUser);
             }
 
-            lock (_loadedUsers)
-            {
-                if(!_loadedUsers.ContainsKey(userId))
-                    _loadedUsers.Add(userId, userModel);
-            }
+            _loadedUsers.TryAdd(userId, userModel);
 
             if (!isMainUser)
             {
-                lock (_loadingStartups)
-                {
-                    _loadingStartups.Remove(userId);
-                }
+                _loadingUsers[userId] = true;
             }
 
             return userModel;
@@ -67,22 +53,14 @@ namespace StartupsFront.Services
 
         public static async Task<StartupModel> GetStartupById(int id)
         {
-            bool isLoading;
-
-            lock (_loadingStartups)
+            if (!_loadingStartups.TryAdd(id, false))
             {
-                isLoading = _loadingStartups.Contains(id);
-                if (!isLoading)
-                    _loadingStartups.Add(id);
-            }
+                bool isLoaded = false;
 
-            while (isLoading)
-            {
-                await Task.Delay(500);
-
-                lock (_loadingStartups)
+                while (isLoaded)
                 {
-                    isLoading = _loadingStartups.Contains(id);
+                    await Task.Delay(500);
+                    _loadingStartups.TryGetValue(id, out isLoaded);
                 }
             }
 
@@ -143,16 +121,9 @@ namespace StartupsFront.Services
                 }
             }
 
-            lock(_loadedStartups)
-            {
-                if (!_loadedStartups.ContainsKey(id))
-                    _loadedStartups.Add(id, startupModel);
-            }
+            _loadedStartups.TryAdd(id, startupModel);
 
-            lock (_loadingStartups)
-            {
-                _loadingStartups.Remove(id);
-            }
+            _loadingStartups[id] = true;
 
             return startupModel;
         }

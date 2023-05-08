@@ -91,6 +91,10 @@ namespace StartupsFront.ViewModels
                 }
 
             }
+            else
+            {
+                SuccessMessage = "NeedToLogin";
+            }
             return true;
         }
 
