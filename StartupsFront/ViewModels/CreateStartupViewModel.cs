@@ -78,7 +78,7 @@ namespace StartupsFront.ViewModels
 
                     var uri = Requests.CreateStartupFromMultiformUri;
 
-                    var hash = await CalculateHash(dataStore.MainModel.UserOrNull.Name, dataStore.MainModel.UserOrNull.Token);
+                    var hash = await Requests.CalculateStartupsHash(dataStore.MainModel.UserOrNull.Name, dataStore.MainModel.UserOrNull.Token);
 
                     MultipartFormDataContent form = new MultipartFormDataContent
                     {
@@ -166,17 +166,6 @@ namespace StartupsFront.ViewModels
                 var bytes = File.ReadAllBytes(photo.FullPath);
                 File.WriteAllBytes(ImageSource, bytes);
             });
-        }
-
-        private const string _hashKey = "It's my startup!";
-        private static Task<string> CalculateHash(string authorName, string authorToken)
-        {
-            using (SHA256 mySHA256 = SHA256.Create()) 
-            {
-                var stream = new MemoryStream(Encoding.ASCII.GetBytes(authorName + authorToken + _hashKey));
-                var byteResult = mySHA256.ComputeHash(stream);
-                return Task.FromResult(Convert.ToBase64String(byteResult).Replace("+", "").Replace("/", ""));
-            }
         }
     }
 }

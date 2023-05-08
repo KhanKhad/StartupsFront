@@ -12,7 +12,7 @@ namespace StartupsFront.ViewModels
         public INavigation Navigation { get; set; }
 
         public AllStartupsViewModel AllStartupsViewModel { get; set; }
-        public FavoriteViewModel FavoriteViewModel { get; set; }
+        public ContributingStartupsViewModel ContributingStartupsViewModel { get; set; }
         public CreateStartupViewModel CreateStartupViewModel { get; set; }
         public ChatsViewModel ChatsViewModel { get; set; }
         public ProfileViewModel ProfileViewModel { get; set; }
@@ -22,7 +22,7 @@ namespace StartupsFront.ViewModels
             Navigation = navigation;
 
             AllStartupsViewModel = new AllStartupsViewModel() { Navigation = Navigation };
-            FavoriteViewModel = new FavoriteViewModel() { Navigation = Navigation };
+            ContributingStartupsViewModel = new ContributingStartupsViewModel() { Navigation = Navigation };
             CreateStartupViewModel = new CreateStartupViewModel() { Navigation = Navigation };
             ChatsViewModel = new ChatsViewModel() { Navigation = Navigation };
             ProfileViewModel = new ProfileViewModel() { Navigation = Navigation };

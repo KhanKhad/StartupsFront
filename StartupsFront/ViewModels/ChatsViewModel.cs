@@ -135,7 +135,7 @@ namespace StartupsFront.ViewModels
                 {
                     var myId = _user.Id;
 
-                    var hash = await CalculateHash(_user.Name, _user.Token);
+                    var hash = await Requests.CalculateMessagesHash(_user.Name, _user.Token);
 
                     var uri = Requests.GetMessages(_user.Name, hash, delta);
 
@@ -240,18 +240,6 @@ namespace StartupsFront.ViewModels
             _user = obj;
             _delta = 0;
             Chats.Clear();
-        }
-
-
-        private const string _hashKey = "It's my message!";
-        public static Task<string> CalculateHash(string authorName, string authorToken)
-        {
-            using (SHA256 mySHA256 = SHA256.Create())
-            {
-                var stream = new MemoryStream(Encoding.ASCII.GetBytes(authorName + authorToken + _hashKey));
-                var byteResult = mySHA256.ComputeHash(stream);
-                return Task.FromResult(Convert.ToBase64String(byteResult).Replace("+", "").Replace("/", ""));
-            }
         }
     }
 

@@ -98,7 +98,7 @@ namespace StartupsFront.ViewModels
             using (var client = new HttpClient())
             {
                 var user = DataStore.MainModel.UserOrNull;
-                var hash = await ChatsViewModel.CalculateHash(user.Name, user.Token);
+                var hash = await Requests.CalculateMessagesHash(user.Name, user.Token);
                 var messageModel = new MessageJsonModel() { Message = message, Sender = user.Name, Recipient = Сompanion.Name, Hash = hash };
 
                 var content = JsonContent.Create(messageModel);

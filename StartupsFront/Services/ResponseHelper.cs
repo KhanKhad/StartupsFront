@@ -13,10 +13,33 @@ namespace StartupsFront.Services
     {
         private static readonly Dictionary<int, UserModel> _loadedUsers = new Dictionary<int, UserModel>();
         private static readonly Dictionary<int, StartupModel> _loadedStartups = new Dictionary<int, StartupModel>();
-
+        private static readonly List<int> _loadingUsers= new List<int>();
+        private static readonly List<int> _loadingStartups= new List<int>();
         public static async Task<UserModel> GetUserById(int userId, bool isMainUser = false)
         {
-            if(_loadedUsers.TryGetValue(userId, out var userModel))
+            if (!isMainUser)
+            {
+                bool isLoading;
+
+                lock (_loadingUsers)
+                {
+                    isLoading = _loadingUsers.Contains(userId);
+                    if (!isLoading)
+                        _loadingUsers.Add(userId);
+                }
+
+                while (isLoading)
+                {
+                    await Task.Delay(500);
+
+                    lock (_loadingUsers)
+                    {
+                        isLoading = _loadingUsers.Contains(userId);
+                    }
+                }
+            }
+
+            if (_loadedUsers.TryGetValue(userId, out var userModel))
                 return userModel;
 
             using (var client = new HttpClient())
@@ -31,11 +54,38 @@ namespace StartupsFront.Services
                     _loadedUsers.Add(userId, userModel);
             }
 
+            if (!isMainUser)
+            {
+                lock (_loadingStartups)
+                {
+                    _loadingStartups.Remove(userId);
+                }
+            }
+
             return userModel;
         }
 
         public static async Task<StartupModel> GetStartupById(int id)
         {
+            bool isLoading;
+
+            lock (_loadingStartups)
+            {
+                isLoading = _loadingStartups.Contains(id);
+                if (!isLoading)
+                    _loadingStartups.Add(id);
+            }
+
+            while (isLoading)
+            {
+                await Task.Delay(500);
+
+                lock (_loadingStartups)
+                {
+                    isLoading = _loadingStartups.Contains(id);
+                }
+            }
+
             if (_loadedStartups.TryGetValue(id, out var startupModel))
                 return startupModel;
 
@@ -68,7 +118,9 @@ namespace StartupsFront.Services
                                 startupModel.Description = await content.ReadAsStringAsync();
                                 break;
                             case JsonConstants.StartupContributorsIds:
-                                startupModel.Contributors = (await content.ReadAsStringAsync()).Split(',').Select(i=> int.Parse(i)).ToList();
+                                var contributorsIds = await content.ReadAsStringAsync();
+                                if(!string.IsNullOrEmpty(contributorsIds))
+                                    startupModel.Contributors = contributorsIds.Split(',').Select(i=> int.Parse(i)).ToList();
                                 break;
                             case JsonConstants.StartupPicturePropertyName:
                                 var fileName = content.Headers.ContentDisposition.FileName;
@@ -96,7 +148,11 @@ namespace StartupsFront.Services
                 if (!_loadedStartups.ContainsKey(id))
                     _loadedStartups.Add(id, startupModel);
             }
-            
+
+            lock (_loadingStartups)
+            {
+                _loadingStartups.Remove(id);
+            }
 
             return startupModel;
         }

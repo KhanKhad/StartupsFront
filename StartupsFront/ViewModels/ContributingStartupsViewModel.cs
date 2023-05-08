@@ -1,21 +1,22 @@
-﻿using StartupsFront.MVVM;
+﻿using StartupsFront.Models;
+using StartupsFront.MVVM;
 using StartupsFront.Services;
 using StartupsFront.Views;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace StartupsFront.ViewModels
 {
-    public class FavoriteViewModel : BaseViewModel
+    public class ContributingStartupsViewModel : BaseViewModel
     {
         public INavigation Navigation { get; set; }
 
         private object _startupsLocker;
 
+        private UserModel UserOrNull { get; set; }
         public wObservableCollection<StartupViewModel> Startups { get; set; }
 
         public StartupViewModel LastTappedStartup { get; set; }
@@ -23,63 +24,74 @@ namespace StartupsFront.ViewModels
         public Command StartupTappedCmd { get; set; }
         public Command RefreshCmd { get; set; }
 
-        public FavoriteViewModel()
+        public ContributingStartupsViewModel()
         {
             Startups = new wObservableCollection<StartupViewModel>();
             StartupTappedCmd = new Command(async () => await StartupTapped());
             RefreshCmd = new Command(async () => await DataRefresh());
             _startupsLocker = new object();
+            UserOrNull = DataStore.MainModel.UserOrNull;
+            DataStore.MainModel.UserChanged += UserChanged;
+            RefreshCmd.Execute(null);
+        }
+
+        private void UserChanged(UserModel obj)
+        {
+            UserOrNull = obj;
             RefreshCmd.Execute(null);
         }
 
         private async Task<bool> DataRefresh()
         {
-            // RefreshCmd.ChangeCanExecute();
             Startups.Clear();
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
-            using (var client = new HttpClient())
+            if(UserOrNull != null)
             {
-                try
+                using (var client = new HttpClient())
                 {
-                    var uri = Requests.GetStartupsIds(1, 10);
-
-                    var response = await client.GetAsync(uri);
-
-                    var responseString = await response.Content.ReadAsStringAsync();
-
-                    if (responseString == "[]")
-                    {
-                        SuccessMessage = "Success";
-                        return true;
-                    }
-
-                    var ids = responseString.Trim(new char[] { '[', ']' }).Split(',');
-
-                    var tasks = new List<Task>();
-
-                    foreach (var id in ids)
-                    {
-                        var task = GetStartupById(int.Parse(id));
-                        tasks.Add(task);
-                    }
                     try
                     {
-                        await Task.WhenAll(tasks);
+                        var uri = Requests.GetMyStartupsIds(UserOrNull.Id, 1, 10);
+
+                        var response = await client.GetAsync(uri);
+
+                        var responseString = await response.Content.ReadAsStringAsync();
+
+                        if (responseString == "[]")
+                        {
+                            SuccessMessage = "Success";
+                            return true;
+                        }
+
+                        var ids = responseString.Trim(new char[] { '[', ']' }).Split(',');
+
+                        var tasks = new List<Task>();
+
+                        foreach (var id in ids)
+                        {
+                            var task = GetStartupById(int.Parse(id));
+                            tasks.Add(task);
+                        }
+                        try
+                        {
+                            await Task.WhenAll(tasks);
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorMessage = ErrorMessage += Environment.NewLine + ex.Message;
+                        }
+                        SuccessMessage = "Success";
                     }
                     catch (Exception ex)
                     {
-                        ErrorMessage = ErrorMessage += Environment.NewLine + ex.Message;
+                        ErrorMessage = ex.Message;
                     }
-                    SuccessMessage = "Success";
-                }
-                catch (Exception ex)
-                {
-                    ErrorMessage = ex.Message;
+
                 }
 
-                return true;
             }
+            return true;
         }
 
 

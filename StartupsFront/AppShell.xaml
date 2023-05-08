@@ -31,7 +31,7 @@
 
     <TabBar>
         <ShellContent Title="AllStartups"   Icon="search.png"   ContentTemplate="{DataTemplate local:AllStartupsPage}"       BindingContext="{Binding AllStartupsViewModel}"/>
-        <ShellContent Title="Favorite"      Icon="heart.png"     ContentTemplate="{DataTemplate local:FavoriteStartupsPage}" BindingContext="{Binding FavoriteViewModel}"/>
+        <ShellContent Title="Contributing"  Icon="heart.png"     ContentTemplate="{DataTemplate local:ContributingStartupsPage}" BindingContext="{Binding ContributingStartupsViewModel}"/>
         <ShellContent Title="Create"        Icon="plus.png"      ContentTemplate="{DataTemplate local:CreateStartupPage}"    BindingContext="{Binding CreateStartupViewModel}"/>
         <ShellContent Title="Chats"         Icon="chats.png"      ContentTemplate="{DataTemplate local:ChatsPage}"           BindingContext="{Binding ChatsViewModel}"/>
         <ShellContent Title="Profile"       Icon="profile.png"      ContentTemplate="{DataTemplate local:ProfilePage}"       BindingContext="{Binding ProfileViewModel}"/>

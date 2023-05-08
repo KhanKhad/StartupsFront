@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace StartupsFront.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class FavoriteStartupsPage : ContentPage
+    public partial class ContributingStartupsPage : ContentPage
     {
-        public FavoriteStartupsPage()
+        public ContributingStartupsPage()
         {
             InitializeComponent();
         }

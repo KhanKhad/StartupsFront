@@ -52,10 +52,6 @@ namespace StartupsFront.ViewModels
 
             if (loginResult)
                 await Navigation.PopAsync();
-            /*
-            var t = DataStore;
-            // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
-            t.MainModel.User.Token = Guid.NewGuid().ToString();*/
         }
 
         private async Task<bool> CheckLogAndPass()
@@ -63,8 +59,6 @@ namespace StartupsFront.ViewModels
             using(var client = new HttpClient())
             {
                 var dataStore = DataStore;
-
-
 
                 var response = await client.GetAsync(Requests.Autenticate(_username, _password));
 
