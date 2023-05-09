@@ -8,6 +8,7 @@ namespace StartupsFront.ViewModels
     public class ShellPageViewModel: BaseViewModel
     {
         public static ShellPageViewModel Current { get; set; }
+        public static DateTime AppStarted { get; set; }
 
         public INavigation Navigation { get; set; }
 
@@ -26,7 +27,7 @@ namespace StartupsFront.ViewModels
             CreateStartupViewModel = new CreateStartupViewModel() { Navigation = Navigation };
             ChatsViewModel = new ChatsViewModel() { Navigation = Navigation };
             ProfileViewModel = new ProfileViewModel() { Navigation = Navigation };
-
+            AppStarted = DateTime.UtcNow;
             Current = this;
         }
     }

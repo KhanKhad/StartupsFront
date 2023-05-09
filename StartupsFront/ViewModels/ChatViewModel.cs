@@ -18,6 +18,9 @@ namespace StartupsFront.ViewModels
         private string _lastMessage;
         private string _myMessage;
 
+        INotificationManager notificationManager;
+        int notificationNumber = 0;
+
         public UserModel Сompanion { get; set; }
         public UserModel Me { get; set; }
         public string LastMessage
@@ -52,6 +55,13 @@ namespace StartupsFront.ViewModels
             Messages = new wObservableCollection<MessageViewModel>();
 
             SendMessageCommand = new Command(async () => await SendMessage());
+
+            notificationManager = DependencyService.Get<INotificationManager>();
+            notificationManager.NotificationReceived += (sender, eventArgs) =>
+            {
+                var evtData = (NotificationEventArgs)eventArgs;
+                ShowNotification(evtData.Title, evtData.Message);
+            };
         }
 
         public async Task SetUser(int userId)
@@ -67,11 +77,34 @@ namespace StartupsFront.ViewModels
             var owner = string.Empty;
 
             if (message.RecipientForeignKey == Сompanion.Id)
+            {
                 owner = Me.Name;
-            else owner = Сompanion.Name;
+            }
+            else
+            {
+                owner = Сompanion.Name;
+                if(message.MessageSended > ShellPageViewModel.AppStarted)
+                {
+                    notificationNumber++;
+                    string title = $"You get new message from {owner}!";
+                    string ntmessage = $"{owner}: {message.Message}";
+                    notificationManager.SendNotification(title, ntmessage);
+                }
+            }
 
             Messages.Add(new MessageViewModel(message, owner));
             LastMessage = $"{owner}: {message.Message}";
+        }
+
+        void ShowNotification(string title, string message)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                var msg = new Label()
+                {
+                    Text = $"Notification Received:\nTitle: {title}\nMessage: {message}"
+                };
+            });
         }
 
         // Отправка сообщения
