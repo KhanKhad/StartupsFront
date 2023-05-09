@@ -29,8 +29,8 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <Label Grid.Row="0" Text="{Binding Name}" FontAttributes="Bold"/>
-                                <Label Grid.Row="1" Text="{Binding Description}"/>
+                                <Label Grid.Row="0" Text="{Binding Name}" FontAttributes="Bold" HorizontalOptions="CenterAndExpand"/>
+                                <Label Grid.Row="1" Text="{Binding Description}" HeightRequest="20"/>
                             </Grid>
 
                         </Grid>

@@ -11,14 +11,14 @@
             <Label Text="Название стартапа" FontSize="25" FontAttributes="Bold"></Label>
             <Entry Placeholder="Название" Text="{Binding StartupName}"></Entry>
             <Label Text="Описание" FontSize="25" FontAttributes="Bold"></Label>
-            <Entry Placeholder="Описание стартапа" Text="{Binding StartupDescription}"></Entry>
-            <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center">
+            <Editor Placeholder="Описание стартапа" Text="{Binding StartupDescription}"  HeightRequest="200" IsTextPredictionEnabled="True"></Editor>
+            <StackLayout Padding="5, 10, 5, 5" HorizontalOptions="Center" VerticalOptions="End">
                 <Button Text="Создать стартап" Command="{Binding CreateStartupCommand}" CornerRadius="10"></Button>
             </StackLayout>
-            <ScrollView HorizontalScrollBarVisibility="Default">
+            <ScrollView HorizontalScrollBarVisibility="Default" VerticalOptions="End">
                 <Label Text="{Binding SuccessMessage}" FontSize="25" TextColor = "Green" HorizontalOptions="Center" FontAttributes="Bold"></Label>
             </ScrollView>
-            <ScrollView HorizontalScrollBarVisibility="Default">
+            <ScrollView HorizontalScrollBarVisibility="Default" VerticalOptions="End">
                 <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
             </ScrollView>
         </StackLayout>
