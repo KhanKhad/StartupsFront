@@ -51,7 +51,7 @@ namespace StartupsFront.Services
             return userModel;
         }
 
-        public static async Task<StartupModel> GetStartupById(int id)
+        public static async Task<StartupModel> GetStartupById(int id, bool forceRefresh = false)
         {
             if (!_loadingStartups.TryAdd(id, false))
             {
@@ -59,13 +59,16 @@ namespace StartupsFront.Services
 
                 while (isLoaded)
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(500).ConfigureAwait(false);
                     _loadingStartups.TryGetValue(id, out isLoaded);
                 }
             }
 
             if (_loadedStartups.TryGetValue(id, out var startupModel))
-                return startupModel;
+            {
+                if(!forceRefresh)
+                    return startupModel;
+            }
 
             using (var client = new HttpClient())
             {
@@ -73,30 +76,30 @@ namespace StartupsFront.Services
 
                 var uri = Requests.GetStartupById(id);
 
-                var response = await client.GetAsync(uri);
+                var response = await client.GetAsync(uri).ConfigureAwait(false);
 
                 try
                 {
-                    var startupMultiform = await response.Content.ReadAsMultipartAsync();
+                    var startupMultiform = await response.Content.ReadAsMultipartAsync().ConfigureAwait(false);
 
                     foreach (var content in startupMultiform.Contents)
                     {
                         switch (content.Headers.ContentDisposition.Name.ToLower())
                         {
                             case JsonConstants.StartupId:
-                                startupModel.Id = int.Parse(await content.ReadAsStringAsync());
+                                startupModel.Id = int.Parse(await content.ReadAsStringAsync().ConfigureAwait(false));
                                 break;
                             case JsonConstants.StartupAuthorId:
-                                startupModel.AuthorForeignKey = int.Parse(await content.ReadAsStringAsync());
+                                startupModel.AuthorForeignKey = int.Parse(await content.ReadAsStringAsync().ConfigureAwait(false));
                                 break;
                             case JsonConstants.StartupName:
-                                startupModel.Name = await content.ReadAsStringAsync();
+                                startupModel.Name = await content.ReadAsStringAsync().ConfigureAwait(false);
                                 break;
                             case JsonConstants.StartupDescription:
-                                startupModel.Description = await content.ReadAsStringAsync();
+                                startupModel.Description = await content.ReadAsStringAsync().ConfigureAwait(false);
                                 break;
                             case JsonConstants.StartupContributorsIds:
-                                var contributorsIds = await content.ReadAsStringAsync();
+                                var contributorsIds = await content.ReadAsStringAsync().ConfigureAwait(false);
                                 if(!string.IsNullOrEmpty(contributorsIds))
                                     startupModel.Contributors = contributorsIds.Split(',').Select(i=> int.Parse(i)).ToList();
                                 break;
@@ -105,7 +108,7 @@ namespace StartupsFront.Services
                                 var path = Path.Combine(FileNames.StartupsPicturesDirectory, fileName);
                                 if (!File.Exists(path))
                                 {
-                                    var bytes = await content.ReadAsByteArrayAsync();
+                                    var bytes = await content.ReadAsByteArrayAsync().ConfigureAwait(false);
                                     File.WriteAllBytes(path, bytes);
                                 }
                                 startupModel.StartupPicFileName = path;
@@ -121,7 +124,9 @@ namespace StartupsFront.Services
                 }
             }
 
-            _loadedStartups.TryAdd(id, startupModel);
+            if(!_loadedStartups.ContainsKey(id))
+                _loadedStartups.TryAdd(id, startupModel);
+            else _loadedStartups[id] = startupModel;
 
             _loadingStartups[id] = true;
 

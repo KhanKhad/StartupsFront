@@ -5,7 +5,8 @@
              x:Class="StartupsFront.Views.ContributingStartupsPage">
     <ContentPage.Content>
         <StackLayout>
-            <Button Text="Refresh" Command ="{Binding RefreshCmd}" />
+            <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="CenterAndExpand"/>
             <flv:FlowListView FlowColumnCount="2" SeparatorVisibility="None" HasUnevenRows="false"
 	FlowItemTappedCommand="{Binding StartupTappedCmd}" FlowLastTappedItem="{Binding LastTappedStartup}"
 	FlowItemsSource="{Binding Startups}" RowHeight="250" >
@@ -37,6 +38,9 @@
                     </DataTemplate>
                 </flv:FlowListView.FlowColumnTemplate>
             </flv:FlowListView>
+
+            <Button Text="Refresh" Command ="{Binding RefreshCmd}" CornerRadius="15" WidthRequest="150" HeightRequest="50" HorizontalOptions="End"/>
+
             <ScrollView HorizontalScrollBarVisibility="Default">
                 <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
             </ScrollView>

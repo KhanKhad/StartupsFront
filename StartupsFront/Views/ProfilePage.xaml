@@ -1,17 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:local="clr-namespace:StartupsFront.Converters"
              x:Class="StartupsFront.Views.ProfilePage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BoolInvertConverter x:Key="invertBool" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="ProfilePage"
+            <Label Text="{Binding Name}" FontAttributes="Bold"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
             <Image Source="{Binding ImageSource}" Margin="10" HeightRequest="100"  />
-            <Button Text="Войти" HorizontalOptions="Center" CornerRadius="10" Command="{Binding LoginOrRegisterCommand}"></Button>
-            <Label Text="{Binding Name}"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Войти" HorizontalOptions="Center" CornerRadius="15" Command="{Binding LoginOrRegisterCommand}" IsVisible="{Binding HaveUser,
+                Converter={StaticResource invertBool}}"></Button>
             <ListView ItemsSource="{Binding StartupRequests}" SelectedItem="{Binding StartupsRequest, Mode=TwoWay}" RowHeight="100" CachingStrategy="RecycleElement" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -44,6 +50,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <Button Text="Выйти" CornerRadius="15" Margin="10" Command="{Binding LogOutCommand}" IsVisible="{Binding HaveUser}" HorizontalOptions="End"/>
+
             <ScrollView HorizontalScrollBarVisibility="Default">
                 <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
             </ScrollView>

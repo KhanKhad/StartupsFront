@@ -37,6 +37,10 @@ namespace StartupsFront.ViewModels
 
         private async Task<bool> DataRefresh()
         {
+            if (IsBusy) return false;
+
+            IsBusy = true;
+
             Startups.Clear();
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
@@ -76,8 +80,11 @@ namespace StartupsFront.ViewModels
                     ErrorMessage = ex.Message;
                 }
 
-                return true;
             }
+
+            IsBusy = false;
+
+            return true;
         }
 
 
@@ -88,6 +95,7 @@ namespace StartupsFront.ViewModels
             var startup = await ResponseHelper.GetStartupById(id);
             startupModel.Id = id;
             startupModel.AuthorId = startup.AuthorForeignKey;
+            startupModel.Contributors = startup.Contributors.ToArray();
             startupModel.Name = startup.Name;
             startupModel.Description = startup.Description;
             startupModel.PictureFileName = startup.StartupPicFileName;
@@ -100,12 +108,20 @@ namespace StartupsFront.ViewModels
 
         private async Task StartupTapped()
         {
+            if(IsBusy) return;
+
+            IsBusy = true;
+
             var vm = LastTappedStartup;
+
+            await vm.SetAuthorAndContributors();
 
             var page = new StartupPage()
             {
                 BindingContext = vm
             };
+
+            IsBusy = false;
 
             await Navigation.PushAsync(page);
         }

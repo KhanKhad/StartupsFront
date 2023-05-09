@@ -44,8 +44,8 @@ namespace StartupsFront.Services
         public static string GetMyStartupsIds(int id, int pageNumber, int pageSize) => $"{GetMyStartupsIdsUri}?id={id}&pageNumber={pageNumber}&pageSize={pageSize}";
         public static string GetStartupById(int id) => $"{GetStartupByIdUri}?id={id}";
         public static string GetUserById(int id) => $"{GetUserByIdUri}?id={id}";
-        public static string GetMessagesDelta(string name) => $"{GetMessagesDeltaUri}?name={name}";
-        public static string GetMessages(string name, string hash, int delta) => $"{GetMessagesUri}?name={name}&hash={hash}&delta={delta}";
+        public static string GetMessagesDelta(int id) => $"{GetMessagesDeltaUri}?id={id}";
+        public static string GetMessages(int id, string hash, int delta) => $"{GetMessagesUri}?id={id}&hash={hash}&delta={delta}";
 
 
 

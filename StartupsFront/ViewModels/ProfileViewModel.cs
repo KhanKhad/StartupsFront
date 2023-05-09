@@ -31,7 +31,13 @@ namespace StartupsFront.ViewModels
             {
                 _name = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(HaveUser));
             }
+        }
+
+        public bool HaveUser
+        {
+            get => !string.IsNullOrEmpty(Name);
         }
 
         public string ImageSource
@@ -45,7 +51,7 @@ namespace StartupsFront.ViewModels
         }
 
         public Command LoginOrRegisterCommand { get; }
-
+        public Command LogOutCommand { get; }
         public wObservableCollection<StartupRequestViewModel> StartupRequests { get; set; }
         public StartupRequestViewModel StartupRequest { get; set; }
 
@@ -59,8 +65,15 @@ namespace StartupsFront.ViewModels
                 UserChanged(datastore.MainModel.UserOrNull);
 
             LoginOrRegisterCommand = new Command(async (o) => await LoginOrRegister_Cmd(o));
+            LogOutCommand = new Command(async (o) => await LogOut_Cmd(o));
 
             _ = CheckStartupsDelta();
+        }
+
+        private Task LogOut_Cmd(object o)
+        {
+            DataStore.MainModel.UserOrNull = null;
+            return Task.CompletedTask;
         }
 
         private async Task CheckStartupsDelta()
@@ -152,7 +165,7 @@ namespace StartupsFront.ViewModels
                             req.SuccessMessageAct += SuccessMessageInRequest;
                             req.NeedToRemoveMe += NeedToRemoveRequest;
                         }
-                        StartupRequests.AddRange(requestesViewModels);
+                        StartupRequests.ClearThenAddRange(requestesViewModels);
 
                     });
                 }
@@ -168,6 +181,9 @@ namespace StartupsFront.ViewModels
 
         private void NeedToRemoveRequest(StartupRequestViewModel obj)
         {
+            obj.ErrorMessageAct -= ErrorMessageInRequest;
+            obj.SuccessMessageAct -= SuccessMessageInRequest;
+            obj.NeedToRemoveMe -= NeedToRemoveRequest;
             StartupRequests.Remove(obj);
         }
 
@@ -211,9 +227,18 @@ namespace StartupsFront.ViewModels
 
         private void UserChanged(UserModel user)
         {
-            ImageSource = Path.Combine(FileNames.ProfilePictureDirectory, user.ProfilePictFileName);
-            Name = user.Name;
-            UserOrNull = user;
+            if(user != null)
+            {
+                ImageSource = Path.Combine(FileNames.ProfilePictureDirectory, user.ProfilePictFileName);
+                Name = user.Name;
+                UserOrNull = user;
+            }
+            else
+            {
+                ImageSource = string.Empty;
+                Name = string.Empty;
+                UserOrNull = null;
+            }
         }
 
         private async Task LoginOrRegister_Cmd(object o)

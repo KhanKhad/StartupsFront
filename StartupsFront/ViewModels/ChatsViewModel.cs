@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -22,7 +23,7 @@ namespace StartupsFront.ViewModels
         private int _delta;
         public INavigation Navigation { get; set; }
         public wObservableCollection<ChatViewModel> Chats { get; set; }
-
+        public CancellationTokenSource UserChangedToken { get; set; }
         public Command ChatClick { get; }
 
         public ChatViewModel SelectedChat
@@ -49,6 +50,7 @@ namespace StartupsFront.ViewModels
             _user = DataStore.MainModel.UserOrNull;
             DataStore.MainModel.UserChanged += UserChanged;
             _delta = 0;
+            UserChangedToken = new CancellationTokenSource();
             _ = CheckDelta();
         }
 
@@ -91,7 +93,7 @@ namespace StartupsFront.ViewModels
                     {
                         try
                         {
-                            var uri = Requests.GetMessagesDelta(_user.Name);
+                            var uri = Requests.GetMessagesDelta(_user.Id);
 
                             var response = await client.GetAsync(uri);
 
@@ -101,7 +103,7 @@ namespace StartupsFront.ViewModels
                             {
                                 if (newDelta != _delta)
                                 {
-                                    await GetAllMessages(_delta);
+                                    await GetAllMessages(_delta, UserChangedToken.Token);
                                     _delta = newDelta;
                                 }
                                 Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
@@ -127,7 +129,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        public async Task GetAllMessages(int delta)
+        public async Task GetAllMessages(int delta, CancellationToken token)
         {
             using (var client = new HttpClient())
             {
@@ -135,14 +137,18 @@ namespace StartupsFront.ViewModels
                 {
                     var myId = _user.Id;
 
+                    if (token.IsCancellationRequested) return;
+
                     var hash = await Requests.CalculateMessagesHash(_user.Name, _user.Token);
 
-                    var uri = Requests.GetMessages(_user.Name, hash, delta);
+                    var uri = Requests.GetMessages(myId, hash, delta);
 
                     var response = await client.GetAsync(uri);
 
                     var responseString = await response.Content.ReadAsStringAsync();
-                    
+
+                    if (token.IsCancellationRequested) return;
+
                     var messages = ParseMessages(responseString);
 
                     var messagesToMe = messages.Where(i => i.RecipientForeignKey == myId).ToArray();
@@ -150,6 +156,8 @@ namespace StartupsFront.ViewModels
                     var messagesFromMe = messages.Where(i => i.SenderForeignKey == myId).ToArray();
 
                     var chats = new Dictionary<int, ChatModel>();
+
+                    if (token.IsCancellationRequested) return;
 
                     foreach ( var message in messagesToMe)
                     {
@@ -175,9 +183,11 @@ namespace StartupsFront.ViewModels
                         }
                     }
 
+                    if (token.IsCancellationRequested) return;
+
                     foreach ( var chatKey in chats.Keys)
                     {
-                        await CreateChat(chatKey, chats[chatKey]);
+                        await CreateChat(chatKey, chats[chatKey], token);
                     }
                 }
                 catch (Exception ex)
@@ -190,7 +200,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        public async Task CreateChat(int chatCompanionId, ChatModel chatModel)
+        public async Task CreateChat(int chatCompanionId, ChatModel chatModel, CancellationToken token)
         {
             try
             {
@@ -207,7 +217,8 @@ namespace StartupsFront.ViewModels
 
                 var messagesInChat = chatModel.GetAllMessagesSortedByMyDelta();
 
-                
+                if (token.IsCancellationRequested) return;
+
                 Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
                 {
                     foreach (var message in messagesInChat)
@@ -215,7 +226,7 @@ namespace StartupsFront.ViewModels
                         chat.AddMessage(message);
                     }
 
-                    if(chatNotExist)
+                    if(chatNotExist && !token.IsCancellationRequested)
                         Chats.Add(chat);
                 });
             }
@@ -237,9 +248,11 @@ namespace StartupsFront.ViewModels
 
         private void UserChanged(UserModel obj)
         {
+            UserChangedToken.Cancel();
             _user = obj;
             _delta = 0;
             Chats.Clear();
+            UserChangedToken = new CancellationTokenSource();
         }
     }
 

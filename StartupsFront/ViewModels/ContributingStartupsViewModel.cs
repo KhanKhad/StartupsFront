@@ -4,7 +4,9 @@ using StartupsFront.Services;
 using StartupsFront.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -107,6 +109,7 @@ namespace StartupsFront.ViewModels
             startupModel.Id = id;
             startupModel.AuthorId = startup.AuthorForeignKey;
             startupModel.Name = startup.Name;
+            startupModel.Contributors = startup.Contributors.ToArray();
             startupModel.Description = startup.Description;
             startupModel.PictureFileName = startup.StartupPicFileName;
 
@@ -118,12 +121,20 @@ namespace StartupsFront.ViewModels
 
         private async Task StartupTapped()
         {
+            if (IsBusy) return;
+
+            IsBusy = true;
+
             var vm = LastTappedStartup;
+
+            await vm.SetAuthorAndContributors();
 
             var page = new StartupPage()
             {
                 BindingContext = vm
             };
+
+            IsBusy = false;
 
             await Navigation.PushAsync(page);
         }

@@ -4,14 +4,17 @@
              x:Class="StartupsFront.Views.StartupPage">
     <ContentPage.Content>
         <StackLayout>
+            <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="CenterAndExpand"/>
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <Image Grid.ColumnSpan="3" Source="{Binding PictureFileName}"/>
+                    <Image Source="{Binding PictureFileName}"/>
                 </Grid>
 
                 <Grid Grid.Row="1" HorizontalOptions="CenterAndExpand">
@@ -20,26 +23,35 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Row="0" Text="{Binding Name}" FontAttributes="Bold"/>
-                    <Label Grid.Row="1" Text="{Binding Description}"/>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Command="{Binding JoinToStartupCmd}" Text="Присоединиться"/>
-                        <Button Grid.Column="1" Command="{Binding ToChatCmd}" Text="Написать автору"/>
-                    </Grid>
+                    <Label Grid.Row="0" Text="{Binding Name, StringFormat='Название: {0}'}" FontAttributes="Bold" HorizontalOptions="CenterAndExpand"/>
+                    <Label Grid.Row="1" Text="{Binding Description, StringFormat='Описание: {0}'}" HorizontalOptions="CenterAndExpand"/>
                 </Grid>
 
+                <Grid Grid.Row="2" HorizontalOptions="CenterAndExpand">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Text="{Binding AuthorName, StringFormat='Автор: {0}'}" FontAttributes="Bold" HorizontalOptions="CenterAndExpand"/>
+                    <Label Grid.Row="1" Text="{Binding ContributorsString, StringFormat='Все создатели: {0}'}" HorizontalOptions="CenterAndExpand"/>
+                </Grid>
             </Grid>
+            <Button Text="Refresh" Command ="{Binding RefreshCmd}" CornerRadius="15" WidthRequest="150" HeightRequest="50" HorizontalOptions="End"/>
             <ScrollView HorizontalScrollBarVisibility="Default">
                 <Label Text="{Binding ErrorMessage}" FontSize="25" TextColor = "Red" HorizontalOptions="Center" FontAttributes="Bold"></Label>
             </ScrollView>
             <ScrollView HorizontalScrollBarVisibility="Default">
                 <Label Text="{Binding SuccessMessage}" FontSize="25" TextColor = "Green" HorizontalOptions="Center" FontAttributes="Bold"></Label>
             </ScrollView>
+            <Grid VerticalOptions="EndAndExpand" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding JoinToStartupCmd}" Text="Присоединиться" CornerRadius="15"/>
+                <Button Grid.Column="1" Command="{Binding ToChatCmd}" Text="Написать автору" CornerRadius="15"/>
+            </Grid>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
