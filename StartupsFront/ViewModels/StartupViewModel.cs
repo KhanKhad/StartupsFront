@@ -118,7 +118,7 @@ namespace StartupsFront.ViewModels
 
         public async Task SetAuthorAndContributors()
         {
-            var author = await ResponseHelper.GetUserById(Id);
+            var author = await ResponseHelper.GetUserById(AuthorId);
             var contributors = new List<UserModel>();
             foreach (var contributorId in Contributors)
             {

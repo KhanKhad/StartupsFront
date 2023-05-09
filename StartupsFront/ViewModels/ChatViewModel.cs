@@ -110,6 +110,7 @@ namespace StartupsFront.ViewModels
         // Отправка сообщения
         private async Task SendMessage()
         {
+            if (string.IsNullOrEmpty(MyMessage)) return;
             try
             {
                 IsBusy = true;

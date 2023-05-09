@@ -87,7 +87,7 @@ namespace StartupsFront.Droid.LocalNotifications
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
             {
-                pendingIntent = PendingIntent.GetActivity(AndroidApp.Context, pendingIntentId++, intent, PendingIntentFlags.Mutable);
+                pendingIntent = PendingIntent.GetActivity(AndroidApp.Context, pendingIntentId++, intent, PendingIntentFlags.Immutable);
             }
             else
             {
