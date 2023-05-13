@@ -29,13 +29,13 @@ namespace StartupsFront.ViewModels
         public AllStartupsViewModel()
         {
             Startups = new wObservableCollection<StartupViewModel>();
-            StartupTappedCmd = new Command(async () => await StartupTapped());
-            RefreshCmd = new Command(async () => await DataRefresh());
+            StartupTappedCmd = new Command(async () => await StartupTappedAsync());
+            RefreshCmd = new Command(async () => await DataRefreshAsync());
             _startupsLocker = new object();
             RefreshCmd.Execute(null);
         }
 
-        private async Task<bool> DataRefresh()
+        private async Task<bool> DataRefreshAsync()
         {
             if (IsBusy) return false;
 
@@ -66,7 +66,7 @@ namespace StartupsFront.ViewModels
                     {
                         foreach (var id in ids)
                         {
-                            await GetStartupById(int.Parse(id));
+                            await GetStartupByIdAsync(int.Parse(id));
                         }
                         SuccessMessage = "Success";
                     }
@@ -88,11 +88,11 @@ namespace StartupsFront.ViewModels
         }
 
 
-        private async Task GetStartupById(int id)
+        private async Task GetStartupByIdAsync(int id)
         {
             var startupModel = new StartupViewModel() { Navigation = Navigation };
 
-            var startup = await ResponseHelper.GetStartupById(id);
+            var startup = await ResponseHelper.GetStartupByIdAsync(id);
             startupModel.Id = id;
             startupModel.AuthorId = startup.AuthorForeignKey;
             startupModel.Contributors = startup.Contributors.ToArray();
@@ -106,7 +106,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        private async Task StartupTapped()
+        private async Task StartupTappedAsync()
         {
             if(IsBusy) return;
 

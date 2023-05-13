@@ -53,7 +53,7 @@ namespace StartupsFront.ViewModels
 
         public CreateStartupViewModel()
         {
-            PickImageCommand = new Command(async () => await PickImage());
+            PickImageCommand = new Command(async () => await PickImageAsync());
             CreateStartupCommand = new Command(async () => await CreateStartupAsync());
         }
 
@@ -62,10 +62,10 @@ namespace StartupsFront.ViewModels
         {
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
-            await CreateStartupRequest();
+            await CreateStartupRequestAsync();
         }
 
-        private async Task<bool> CreateStartupRequest()
+        private async Task<bool> CreateStartupRequestAsync()
         {
             var dataStore = DataStore;
 
@@ -127,7 +127,7 @@ namespace StartupsFront.ViewModels
         }
 
 
-        private async Task PickImage()
+        private async Task PickImageAsync()
         {
             await TakePhotoAsync();
             OnPropertyChanged(nameof(ImageSource));

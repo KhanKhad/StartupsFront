@@ -46,29 +46,29 @@ namespace StartupsFront.ViewModels
         {
             Chats = new wObservableCollection<ChatViewModel>();
 
-            ChatClick = new Command(async() => await OpenChat());
+            ChatClick = new Command(async() => await OpenChatAsync());
             _user = DataStore.MainModel.UserOrNull;
             DataStore.MainModel.UserChanged += UserChanged;
             _delta = 0;
             UserChangedToken = new CancellationTokenSource();
-            _ = CheckDelta();
+            _ = CheckDeltaAsync();
         }
 
-        public async Task OpenChatWith(int chatCompanionId)
+        public async Task OpenChatWithAsync(int chatCompanionId)
         {
             var chat = Chats.FirstOrDefault(i => i.Сompanion.Id == chatCompanionId);
 
             if (chat == null)
             {
                 chat = new ChatViewModel() { Navigation = Navigation };
-                await chat.SetUser(chatCompanionId);
+                await chat.SetUserAsync(chatCompanionId);
                 Chats.Add(chat);
             }
 
-            await OpenChat(chat);
+            await OpenChatAsync(chat);
         }
 
-        private async Task OpenChat(ChatViewModel chat = null)
+        private async Task OpenChatAsync(ChatViewModel chat = null)
         {
             ChatViewModel vm;
             if (chat == null)
@@ -83,7 +83,7 @@ namespace StartupsFront.ViewModels
             await Navigation.PushAsync(page);
         }
 
-        public async Task CheckDelta()
+        public async Task CheckDeltaAsync()
         {
             while(true)
             {
@@ -103,7 +103,7 @@ namespace StartupsFront.ViewModels
                             {
                                 if (newDelta != _delta)
                                 {
-                                    await GetAllMessages(_delta, UserChangedToken.Token);
+                                    await GetAllMessagesAsync(_delta, UserChangedToken.Token);
                                     _delta = newDelta;
                                 }
                                 Application.Current.Dispatcher.BeginInvokeOnMainThread(() =>
@@ -129,7 +129,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        public async Task GetAllMessages(int delta, CancellationToken token)
+        public async Task GetAllMessagesAsync(int delta, CancellationToken token)
         {
             using (var client = new HttpClient())
             {
@@ -187,7 +187,7 @@ namespace StartupsFront.ViewModels
 
                     foreach ( var chatKey in chats.Keys)
                     {
-                        await CreateChat(chatKey, chats[chatKey], token);
+                        await CreateChatAsync(chatKey, chats[chatKey], token);
                     }
                 }
                 catch (Exception ex)
@@ -200,7 +200,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        public async Task CreateChat(int chatCompanionId, ChatModel chatModel, CancellationToken token)
+        public async Task CreateChatAsync(int chatCompanionId, ChatModel chatModel, CancellationToken token)
         {
             try
             {
@@ -212,7 +212,7 @@ namespace StartupsFront.ViewModels
                 if (chatNotExist)
                 {
                     chat = new ChatViewModel() { Navigation = Navigation };
-                    await chat.SetUser(chatCompanionId);
+                    await chat.SetUserAsync(chatCompanionId);
                 }
 
                 var messagesInChat = chatModel.GetAllMessagesSortedByMyDelta();

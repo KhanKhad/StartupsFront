@@ -106,7 +106,7 @@ namespace StartupsFront.ViewModels
         {
             if(IsBusy) return;
             IsBusy = true;
-            var startup = await ResponseHelper.GetStartupById(Id, true);
+            var startup = await ResponseHelper.GetStartupByIdAsync(Id, true);
             AuthorId = startup.AuthorForeignKey;
             Contributors = startup.Contributors.ToArray();
             Name = startup.Name;
@@ -118,11 +118,11 @@ namespace StartupsFront.ViewModels
 
         public async Task SetAuthorAndContributors()
         {
-            var author = await ResponseHelper.GetUserById(AuthorId);
+            var author = await ResponseHelper.GetUserByIdAsync(AuthorId);
             var contributors = new List<UserModel>();
             foreach (var contributorId in Contributors)
             {
-                contributors.Add(await ResponseHelper.GetUserById(contributorId));
+                contributors.Add(await ResponseHelper.GetUserByIdAsync(contributorId));
             }
             var s = string.Join(", ", contributors.Select(i => i.Name).ToArray());
             ContributorsString = s;
@@ -136,7 +136,7 @@ namespace StartupsFront.ViewModels
 
         private async Task ToChat()
         {
-            await ShellPageViewModel.Current.ChatsViewModel.OpenChatWith(AuthorId);
+            await ShellPageViewModel.Current.ChatsViewModel.OpenChatWithAsync(AuthorId);
         }
 
         private async Task JoinToStartup()

@@ -16,7 +16,7 @@ namespace StartupsFront.Services
         private static readonly ConcurrentDictionary<int, StartupModel> _loadedStartups = new ConcurrentDictionary<int, StartupModel>();
         private static readonly ConcurrentDictionary<int, bool> _loadingUsers= new ConcurrentDictionary<int, bool>();
         private static readonly ConcurrentDictionary<int, bool> _loadingStartups = new ConcurrentDictionary<int, bool>();
-        public static async Task<UserModel> GetUserById(int userId, bool isMainUser = false)
+        public static async Task<UserModel> GetUserByIdAsync(int userId, bool isMainUser = false)
         {
             if (!isMainUser)
             {
@@ -38,7 +38,7 @@ namespace StartupsFront.Services
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(Requests.GetUserById(userId));
-                userModel = await GetUserModelFromResponse(response, isMainUser);
+                userModel = await GetUserModelFromResponseAsync(response, isMainUser);
             }
 
             _loadedUsers.TryAdd(userId, userModel);
@@ -51,7 +51,7 @@ namespace StartupsFront.Services
             return userModel;
         }
 
-        public static async Task<StartupModel> GetStartupById(int id, bool forceRefresh = false)
+        public static async Task<StartupModel> GetStartupByIdAsync(int id, bool forceRefresh = false)
         {
             if (!_loadingStartups.TryAdd(id, false))
             {
@@ -133,7 +133,7 @@ namespace StartupsFront.Services
             return startupModel;
         }
 
-        public static async Task<UserModel> GetUserModelFromResponse(HttpResponseMessage responseMessage, bool isMainUser = false)
+        public static async Task<UserModel> GetUserModelFromResponseAsync(HttpResponseMessage responseMessage, bool isMainUser = false)
         {
             var result = new UserModelFromResponse();
             var user = new UserModel();

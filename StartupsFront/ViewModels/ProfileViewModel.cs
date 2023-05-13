@@ -200,13 +200,13 @@ namespace StartupsFront.ViewModels
         public async Task<List<StartupRequestViewModel>> CreateStartupRequestAsync(StartupJoinRequestJsonModel request)
         {
             var results = new List<StartupRequestViewModel>();
-            var startup = await ResponseHelper.GetStartupById(request.StartupId);
+            var startup = await ResponseHelper.GetStartupByIdAsync(request.StartupId);
 
             var users = new List<UserModel>();
 
             foreach (var id in request.UsersWantToJoin)
             {
-                var user = await ResponseHelper.GetUserById(id);
+                var user = await ResponseHelper.GetUserByIdAsync(id);
                 users.Add(user);
             }
 

@@ -54,7 +54,7 @@ namespace StartupsFront.ViewModels
             Me = DataStore.MainModel.UserOrNull;
             Messages = new wObservableCollection<MessageViewModel>();
 
-            SendMessageCommand = new Command(async () => await SendMessage());
+            SendMessageCommand = new Command(async () => await SendMessageAsync());
 
             notificationManager = DependencyService.Get<INotificationManager>();
             notificationManager.NotificationReceived += (sender, eventArgs) =>
@@ -64,9 +64,9 @@ namespace StartupsFront.ViewModels
             };
         }
 
-        public async Task SetUser(int userId)
+        public async Task SetUserAsync(int userId)
         {
-            var user = await ResponseHelper.GetUserById(userId);
+            var user = await ResponseHelper.GetUserByIdAsync(userId);
             Сompanion = user;
         }
 
@@ -108,13 +108,13 @@ namespace StartupsFront.ViewModels
         }
 
         // Отправка сообщения
-        private async Task SendMessage()
+        private async Task SendMessageAsync()
         {
             if (string.IsNullOrEmpty(MyMessage)) return;
             try
             {
                 IsBusy = true;
-                await SendMessage(MyMessage);
+                await SendMessageAsync(MyMessage);
                 MyMessage = string.Empty;
             }
             catch (Exception ex)
@@ -127,7 +127,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        private async Task SendMessage(string message)
+        private async Task SendMessageAsync(string message)
         {
             using (var client = new HttpClient())
             {

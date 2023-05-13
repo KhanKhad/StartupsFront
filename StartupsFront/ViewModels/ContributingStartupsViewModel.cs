@@ -4,9 +4,7 @@ using StartupsFront.Services;
 using StartupsFront.Views;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -29,8 +27,8 @@ namespace StartupsFront.ViewModels
         public ContributingStartupsViewModel()
         {
             Startups = new wObservableCollection<StartupViewModel>();
-            StartupTappedCmd = new Command(async () => await StartupTapped());
-            RefreshCmd = new Command(async () => await DataRefresh());
+            StartupTappedCmd = new Command(async () => await StartupTappedAsync());
+            RefreshCmd = new Command(async () => await DataRefreshAsync());
             _startupsLocker = new object();
             UserOrNull = DataStore.MainModel.UserOrNull;
             DataStore.MainModel.UserChanged += UserChanged;
@@ -43,7 +41,7 @@ namespace StartupsFront.ViewModels
             RefreshCmd.Execute(null);
         }
 
-        private async Task<bool> DataRefresh()
+        private async Task<bool> DataRefreshAsync()
         {
             Startups.Clear();
             ErrorMessage = string.Empty;
@@ -72,7 +70,7 @@ namespace StartupsFront.ViewModels
 
                         foreach (var id in ids)
                         {
-                            var task = GetStartupById(int.Parse(id));
+                            var task = GetStartupByIdAsync(int.Parse(id));
                             tasks.Add(task);
                         }
                         try
@@ -101,11 +99,11 @@ namespace StartupsFront.ViewModels
         }
 
 
-        private async Task GetStartupById(int id)
+        private async Task GetStartupByIdAsync(int id)
         {
             var startupModel = new StartupViewModel() { Navigation = Navigation };
 
-            var startup = await ResponseHelper.GetStartupById(id);
+            var startup = await ResponseHelper.GetStartupByIdAsync(id);
             startupModel.Id = id;
             startupModel.AuthorId = startup.AuthorForeignKey;
             startupModel.Name = startup.Name;
@@ -119,7 +117,7 @@ namespace StartupsFront.ViewModels
             }
         }
 
-        private async Task StartupTapped()
+        private async Task StartupTappedAsync()
         {
             if (IsBusy) return;
 
