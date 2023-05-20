@@ -44,42 +44,45 @@ namespace StartupsFront.ViewModels
             Startups.Clear();
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
-            using (var client = new HttpClient())
+
+            try
             {
+                var uri = Requests.GetStartupsIds(1, 10);
+                string responseString;
+
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(uri);
+                    responseString = await response.Content.ReadAsStringAsync();
+                }
+
+                if (responseString == "[]")
+                {
+                    SuccessMessage = "Success";
+                    return true;
+                }
+
+                var ids = responseString.Trim(new char[] { '[', ']' }).Split(',');
+
                 try
                 {
-                    var uri = Requests.GetStartupsIds(1, 10);
+                    var tasks = new List<Task>();
 
-                    var response = await client.GetAsync(uri);
-
-                    var responseString = await response.Content.ReadAsStringAsync();
-
-                    if (responseString == "[]")
+                    foreach (var id in ids)
                     {
-                        SuccessMessage = "Success";
-                        return true;
+                        tasks.Add(GetStartupByIdAsync(int.Parse(id)));
                     }
-
-                    var ids = responseString.Trim(new char[] {'[', ']' }).Split(',');
-
-                    try
-                    {
-                        foreach (var id in ids)
-                        {
-                            await GetStartupByIdAsync(int.Parse(id));
-                        }
-                        SuccessMessage = "Success";
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorMessage = responseString += Environment.NewLine + ex.Message;
-                    }
+                    await Task.WhenAll(tasks.ToArray());
+                    SuccessMessage = "Success";
                 }
                 catch (Exception ex)
                 {
-                    ErrorMessage = ex.Message;
+                    ErrorMessage = responseString += Environment.NewLine + ex.Message;
                 }
-
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
             }
 
             IsBusy = false;
@@ -108,7 +111,7 @@ namespace StartupsFront.ViewModels
 
         private async Task StartupTappedAsync()
         {
-            if(IsBusy) return;
+            if (IsBusy) return;
 
             IsBusy = true;
 

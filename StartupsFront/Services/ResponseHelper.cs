@@ -13,9 +13,8 @@ namespace StartupsFront.Services
     public static class ResponseHelper
     {
         private static readonly ConcurrentDictionary<int, UserModel> _loadedUsers = new ConcurrentDictionary<int, UserModel>();
-        private static readonly ConcurrentDictionary<int, StartupModel> _loadedStartups = new ConcurrentDictionary<int, StartupModel>();
+        private static readonly ConcurrentDictionary<int, Task<StartupModel>> _loadedStartups = new ConcurrentDictionary<int, Task<StartupModel>>();
         private static readonly ConcurrentDictionary<int, bool> _loadingUsers= new ConcurrentDictionary<int, bool>();
-        private static readonly ConcurrentDictionary<int, bool> _loadingStartups = new ConcurrentDictionary<int, bool>();
         public static async Task<UserModel> GetUserByIdAsync(int userId, bool isMainUser = false)
         {
             if (!isMainUser)
@@ -51,29 +50,35 @@ namespace StartupsFront.Services
             return userModel;
         }
 
-        public static async Task<StartupModel> GetStartupByIdAsync(int id, bool forceRefresh = false)
+        public static Task<StartupModel> GetStartupByIdAsync(int id, bool forceRefresh = false)
         {
-            if (!_loadingStartups.TryAdd(id, false))
+            if (!_loadedStartups.TryAdd(id, null))
             {
-                bool isLoaded = false;
-
-                while (isLoaded)
+                if(_loadedStartups.TryGetValue(id, out var startupModelTask))
                 {
-                    await Task.Delay(500).ConfigureAwait(false);
-                    _loadingStartups.TryGetValue(id, out isLoaded);
+                    if (forceRefresh)
+                    {
+                        var task = LoadStartup(id);
+                        _loadedStartups[id] = task;
+                        return task;
+                    }
+                    else return startupModelTask;
                 }
             }
-
-            if (_loadedStartups.TryGetValue(id, out var startupModel))
+            else
             {
-                if(!forceRefresh)
-                    return startupModel;
+                var task = LoadStartup(id);
+                _loadedStartups[id] = task;
             }
+            return _loadedStartups[id];
+        }
+
+        public static async Task<StartupModel> LoadStartup(int id)
+        {
+            var startupModel = new StartupModel();
 
             using (var client = new HttpClient())
             {
-                startupModel = new StartupModel();
-
                 var uri = Requests.GetStartupById(id);
 
                 var response = await client.GetAsync(uri).ConfigureAwait(false);
@@ -100,8 +105,8 @@ namespace StartupsFront.Services
                                 break;
                             case JsonConstants.StartupContributorsIds:
                                 var contributorsIds = await content.ReadAsStringAsync().ConfigureAwait(false);
-                                if(!string.IsNullOrEmpty(contributorsIds))
-                                    startupModel.Contributors = contributorsIds.Split(',').Select(i=> int.Parse(i)).ToList();
+                                if (!string.IsNullOrEmpty(contributorsIds))
+                                    startupModel.Contributors = contributorsIds.Split(',').Select(i => int.Parse(i)).ToList();
                                 break;
                             case JsonConstants.StartupPicturePropertyName:
                                 var fileName = content.Headers.ContentDisposition.FileName;
@@ -124,14 +129,9 @@ namespace StartupsFront.Services
                 }
             }
 
-            if(!_loadedStartups.ContainsKey(id))
-                _loadedStartups.TryAdd(id, startupModel);
-            else _loadedStartups[id] = startupModel;
-
-            _loadingStartups[id] = true;
-
             return startupModel;
         }
+
 
         public static async Task<UserModel> GetUserModelFromResponseAsync(HttpResponseMessage responseMessage, bool isMainUser = false)
         {

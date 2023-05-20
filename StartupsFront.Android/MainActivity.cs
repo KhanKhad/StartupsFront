@@ -22,8 +22,7 @@ namespace StartupsFront.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
             var thisActivity = Forms.Context as Activity;
-            ActivityCompat.RequestPermissions(thisActivity, new string[] {
-"android.permission.POST_NOTIFICATIONS"}, 1);
+            ActivityCompat.RequestPermissions(thisActivity, new string[] {"android.permission.POST_NOTIFICATIONS"}, 1);
 
             LoadApplication(new App());
         }

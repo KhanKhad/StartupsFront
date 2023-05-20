@@ -11,15 +11,35 @@
                             <Grid>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="55"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Text="{Binding User.Name}" Grid.Column="0" FontAttributes="Bold" />
-                                <Label Text="{Binding LastMessage}" Grid.Column="1"/>
+                                <Image Source="{Binding CompanionPic}" Grid.Column="0"
+                                        WidthRequest="50"   
+                                        HeightRequest="50"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+                                    <Image.Clip>
+                                        <EllipseGeometry
+                                                Center="25,25"
+                                                RadiusX="25"
+                                                RadiusY="25"/>
+                                    </Image.Clip>
+                                </Image>
+
+                                <Grid  Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Text="{Binding User.Name}" Grid.Column="0" FontAttributes="Bold" />
+                                    <Label Text="{Binding LastMessage}" Grid.Column="1"/>
+                                </Grid>
 
                             </Grid>
                         </ViewCell>
-                        
+
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

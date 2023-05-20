@@ -20,9 +20,21 @@ namespace StartupsFront.ViewModels
 
         INotificationManager notificationManager;
         int notificationNumber = 0;
+        private string _companionPic;
 
         public UserModel Сompanion { get; set; }
         public UserModel Me { get; set; }
+
+
+        public string CompanionPic
+        {
+            get => _companionPic;
+            set
+            {
+                _companionPic = value;
+                OnPropertyChanged();
+            }
+        }
         public string LastMessage
         {
             get => _lastMessage; 
@@ -68,6 +80,7 @@ namespace StartupsFront.ViewModels
         {
             var user = await ResponseHelper.GetUserByIdAsync(userId);
             Сompanion = user;
+            CompanionPic = user.ProfilePictFileName;
         }
 
 
