@@ -12,42 +12,38 @@ namespace StartupsFront.Services
 {
     public static class ResponseHelper
     {
-        private static readonly ConcurrentDictionary<int, UserModel> _loadedUsers = new ConcurrentDictionary<int, UserModel>();
+        private static readonly ConcurrentDictionary<int, Task<UserModel>> _loadedUsers = new ConcurrentDictionary<int, Task<UserModel>>();
         private static readonly ConcurrentDictionary<int, Task<StartupModel>> _loadedStartups = new ConcurrentDictionary<int, Task<StartupModel>>();
-        private static readonly ConcurrentDictionary<int, bool> _loadingUsers= new ConcurrentDictionary<int, bool>();
-        public static async Task<UserModel> GetUserByIdAsync(int userId, bool isMainUser = false)
+        public static Task<UserModel> GetUserByIdAsync(int id, bool isMainUser = false)
         {
             if (!isMainUser)
             {
-                if(!_loadingUsers.TryAdd(userId, false))
+                if (!_loadedUsers.TryAdd(id, null))
                 {
-                    bool isLoaded = false;
-
-                    while (isLoaded)
+                    if (_loadedUsers.TryGetValue(id, out var userModelTask))
                     {
-                        await Task.Delay(500);
-                        _loadingUsers.TryGetValue(userId, out isLoaded);
+                        return userModelTask;
                     }
                 }
+                else
+                {
+                    var task = LoadUserAsync(id, isMainUser);
+                    _loadedUsers[id] = task;
+                }
+                return _loadedUsers[id];
             }
+            else 
+                return LoadUserAsync(id, isMainUser);
+        }
 
-            if (_loadedUsers.TryGetValue(userId, out var userModel))
-                return userModel;
-
+        public static async Task<UserModel> LoadUserAsync(int id, bool isMainUser)
+        {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync(Requests.GetUserById(userId));
-                userModel = await GetUserModelFromResponseAsync(response, isMainUser);
+                var response = await client.GetAsync(Requests.GetUserById(id));
+                var userModel = await GetUserModelFromResponseAsync(response, isMainUser);
+                return userModel;
             }
-
-            _loadedUsers.TryAdd(userId, userModel);
-
-            if (!isMainUser)
-            {
-                _loadingUsers[userId] = true;
-            }
-
-            return userModel;
         }
 
         public static Task<StartupModel> GetStartupByIdAsync(int id, bool forceRefresh = false)
@@ -58,7 +54,7 @@ namespace StartupsFront.Services
                 {
                     if (forceRefresh)
                     {
-                        var task = LoadStartup(id);
+                        var task = LoadStartupAsync(id);
                         _loadedStartups[id] = task;
                         return task;
                     }
@@ -67,13 +63,13 @@ namespace StartupsFront.Services
             }
             else
             {
-                var task = LoadStartup(id);
+                var task = LoadStartupAsync(id);
                 _loadedStartups[id] = task;
             }
             return _loadedStartups[id];
         }
 
-        public static async Task<StartupModel> LoadStartup(int id)
+        public static async Task<StartupModel> LoadStartupAsync(int id)
         {
             var startupModel = new StartupModel();
 

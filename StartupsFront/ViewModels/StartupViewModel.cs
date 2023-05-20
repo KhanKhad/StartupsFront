@@ -120,10 +120,14 @@ namespace StartupsFront.ViewModels
         {
             var author = await ResponseHelper.GetUserByIdAsync(AuthorId);
             var contributors = new List<UserModel>();
+            var tasks = new List<Task<UserModel>>();
             foreach (var contributorId in Contributors)
             {
-                contributors.Add(await ResponseHelper.GetUserByIdAsync(contributorId));
+                tasks.Add(ResponseHelper.GetUserByIdAsync(contributorId));
             }
+            await Task.WhenAll(tasks);
+            contributors.AddRange(tasks.Select(i=>i.Result));
+
             var s = string.Join(", ", contributors.Select(i => i.Name).ToArray());
             ContributorsString = s;
             AuthorName = author.Name;
