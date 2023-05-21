@@ -18,11 +18,11 @@ namespace StartupsFront.Services
 
         public static string CreateUserMultipartUri => $"{Url}{ProfileController}CreateUserFromMultipart";
         public static string AutenticateAndGetUserMultipartUri => $"{Url}{ProfileController}AutenticateAndGetMultipart";
-        public static string TryToJoinToStartupUri => $"{Url}{ProfileController}TryToJoinToStartup";
-        public static string AcceptUserToStartupUri => $"{Url}{ProfileController}AcceptUserToStartup";
-        public static string RejectUserToStartupUri => $"{Url}{ProfileController}RejectUserToStartup";
-        public static string GetStartupsDeltaUri => $"{Url}{ProfileController}GetStartupsDelta";
-        public static string GetStartupsRequestsUri => $"{Url}{ProfileController}GetStartupsJoinRequestes";
+        public static string TryToJoinToStartupUri => $"{Url}{StartupsController}TryToJoinToStartup";
+        public static string AcceptUserToStartupUri => $"{Url}{StartupsController}AcceptUserToStartup";
+        public static string RejectUserToStartupUri => $"{Url}{StartupsController}RejectUserToStartup";
+        public static string GetStartupsDeltaUri => $"{Url}{StartupsController}GetStartupsDelta";
+        public static string GetStartupsRequestsUri => $"{Url}{StartupsController}GetStartupsJoinRequestes";
         public static string CreateStartupFromMultiformUri => $"{Url}{StartupsController}CreateStartupFromMultiform";
         public static string GetStartupsIdsUri => $"{Url}{StartupsController}GetStartupsIds";
         public static string GetMyStartupsIdsUri => $"{Url}{StartupsController}GetMyStartupsIds";
@@ -68,18 +68,6 @@ namespace StartupsFront.Services
                 var byteResult = mySHA256.ComputeHash(stream);
                 return Task.FromResult(Convert.ToBase64String(byteResult).Replace("+", "").Replace("/", ""));
             }
-        }
-
-        private const string _profileHashKey = "My PProfile?";
-        public static Task<string> GetProfileHashAsync(string name, string token)
-        {
-            using (SHA256 mySHA256 = SHA256.Create())
-            {
-                var stream = new MemoryStream(Encoding.ASCII.GetBytes(name + token + _profileHashKey));
-                var byteResult = mySHA256.ComputeHash(stream);
-                return Task.FromResult(Convert.ToBase64String(byteResult).Replace("+", "").Replace("/", ""));
-            }
-            
         }
     }
 }

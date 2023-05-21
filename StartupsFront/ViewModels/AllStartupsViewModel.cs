@@ -59,6 +59,7 @@ namespace StartupsFront.ViewModels
                 if (responseString == "[]")
                 {
                     SuccessMessage = "Success";
+                    IsBusy = false;
                     return true;
                 }
 

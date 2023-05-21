@@ -130,7 +130,7 @@ namespace StartupsFront.ViewModels
                 {
                     var myId = UserOrNull.Id;
 
-                    var hash = await Requests.GetProfileHashAsync(UserOrNull.Name, UserOrNull.Token);
+                    var hash = await Requests.CalculateStartupsHash(UserOrNull.Name, UserOrNull.Token);
 
                     var uri = Requests.GetStartupsRequests(UserOrNull.Id);
 

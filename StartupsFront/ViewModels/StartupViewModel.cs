@@ -151,7 +151,7 @@ namespace StartupsFront.ViewModels
             {
                 try
                 {
-                    var hash = await Requests.GetProfileHashAsync(Me.Name, Me.Token);
+                    var hash = await Requests.CalculateStartupsHash(Me.Name, Me.Token);
 
                     var uri = Requests.TryToJoinToStartup(Me.Id, hash, _id);
 
